@@ -94,6 +94,7 @@ exports.viewer = (function () {
     $("#graff-view svg").attr("height", (bbox.height + 40) + "px");
     $("#graff-view svg").attr("width", (bbox.width + 40) + "px");
 
+    console.log(ccode);
   }
 
   // Each step taken needs to be relative to the position and direction of the
