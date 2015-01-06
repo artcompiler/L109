@@ -90,7 +90,7 @@ exports.viewer = (function () {
       .style("stroke", function(d) { return d.stroke; });
 
 
-    var bbox = $("#graff-view svg g")[0].getBBox();
+    var bbox = $("#graff-view svg")[0].getBBox();
     $("#graff-view svg").attr("height", (bbox.height + 40) + "px");
     $("#graff-view svg").attr("width", (bbox.width + 40) + "px");
 
