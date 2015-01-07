@@ -65,7 +65,7 @@ exports.viewer = (function () {
           penUp();
           break;
         case "D":
-          penDow();
+          penDown();
           break;
         }
         break;
