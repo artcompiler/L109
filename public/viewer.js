@@ -62,10 +62,10 @@ exports.viewer = (function () {
       case "P":
         switch ((c = obj.charAt(i++))) {
         case "U":
-          penState = false;
+          penUp();
           break;
         case "D":
-          penState = true;
+          penDow();
           break;
         }
         break;
