@@ -38,6 +38,7 @@ exports.viewer = (function () {
   }
 
   function updateObj(obj) {
+    console.log("updateObj() obj=" + JSON.stringify(obj));
     objCodeMirror.setValue(obj);
   }
 
