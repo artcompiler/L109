@@ -31,6 +31,8 @@ exports.viewer = (function () {
     penState = false;
     trackState = false;
     ccode = "";
+    depth = 0;
+    breadth = 0;
   }
 
   function round(n) {
@@ -78,29 +80,192 @@ exports.viewer = (function () {
     }
 
     updateObj(ccode);
-    $("#graff-view").html('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360">');
-    var svg = d3.select("#graff-view svg");
-    var circle = svg.selectAll("circle")
-      .data(data);
+    render({
+      name: src,
+      parent: null,
+      children: objToTree(JSON.parse(obj))
+    });
 
-    circle.exit().remove();
+  }
+
+  // obj in, tree of nodes out
+  var depth = 0;
+  var breadth = 0;
+  function objToTree(obj, parent) {
+    var nodes = [];
+    Object.keys(obj).forEach(function (name) {
+      var n = {
+        name: name,
+        parent: parent,
+      };
+      if (typeof obj[name] === "object") {
+        n.children = objToTree(obj[name], name);
+      } else {
+        n.name += ": " + String(obj[name]);
+        breadth++;
+      }
+      nodes.push(n);
+    });
+    return nodes;
+  }
+
+  var margin = {top: 20, right: 120, bottom: 20, left: 120};
+
+  function render(root) {
+    // ************** Generate the tree diagram	 *****************
+	  var width = 1960 - margin.right - margin.left;
+	  var height = (breadth * 14) - margin.top - margin.bottom;
+	  
+    var i = 0,
+	  duration = 750,
+	  root;
+
+    var tree = d3.layout.tree()
+	    .size([height, width]);
+
+    var diagonal = d3.svg.diagonal()
+	    .projection(function(d) { return [d.y, d.x]; });
+
+    var svgStr =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360">' +
+      '<style type="text/css" >' +
+      '<![CDATA[' +
+      'circle {' +
+      '  stroke: #006600;' +
+      '  fill:   #00cc00;' +
+      '}' +
+	    '.node {' +
+		  'cursor: pointer;' +
+	    '}' +
+	    '.node circle {' +
+	    'fill: #fff;' +
+	    'stroke: steelblue;' +
+	    'stroke-width: 3px;' +
+	    '}' +
+	    '.node text {' +
+	    'font: 12px sans-serif;' +
+	    '}' +
+	    '.link {' +
+	    'fill: none;' +
+	    'stroke: #ccc;' +
+	    'stroke-width: 2px;' +
+	    '}' +    
+      ']]>' +
+      '</style>' +
+      '</svg>';
+
+    $("#graff-view").html(svgStr);
+    var svg = d3.select("#graff-view svg")
+      .attr("width", width + margin.right + margin.left)
+	    .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
-    circle.enter().append("circle")
-      .attr("r", 1);
-    
-    circle
-      .attr("cx", function(d) { return d.cx; })
-      .attr("cy", function(d) { return d.cy; })
-      .attr("r", function(d) { return d.r; })
-      .style("fill", function(d) { return d.fill; })
-      .style("stroke", function(d) { return d.stroke; });
+    root.x0 = height / 2;
+    root.y0 = 0;
 
+    update(root);
 
-//    var bbox = $("#graff-view svg")[0].getBBox();
-//    $("#graff-view svg").attr("height", (bbox.height + 40) + "px");
-//    $("#graff-view svg").attr("width", (bbox.width + 40) + "px");
+    d3.select(self.frameElement).style("height", "500px");
 
-    console.log(ccode);
+    function update(source) {
+
+      // Compute the new tree layout.
+      var nodes = tree.nodes(root).reverse(),
+	    links = tree.links(nodes);
+
+      // Normalize for fixed-depth.
+      nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+      // Update the nodes…
+      var node = svg.selectAll("g.node")
+	      .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+      // Enter any new nodes at the parent's previous position.
+      var nodeEnter = node.enter().append("g")
+	      .attr("class", "node")
+	      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+	      .on("click", click);
+
+      nodeEnter.append("circle")
+	      .attr("r", 1e-6)
+	      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+      nodeEnter.append("text")
+	      .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
+	      .attr("dy", ".35em")
+	      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+	      .text(function(d) { return d.name; })
+	      .style("fill-opacity", 1e-6);
+
+      // Transition nodes to their new position.
+      var nodeUpdate = node.transition()
+	      .duration(duration)
+	      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+      nodeUpdate.select("circle")
+	      .attr("r", 4)
+	      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+      nodeUpdate.select("text")
+	      .style("fill-opacity", 1);
+
+      // Transition exiting nodes to the parent's new position.
+      var nodeExit = node.exit().transition()
+	      .duration(duration)
+	      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+	      .remove();
+
+      nodeExit.select("circle")
+	      .attr("r", 1e-6);
+
+      nodeExit.select("text")
+	      .style("fill-opacity", 1e-6);
+
+      // Update the links…
+      var link = svg.selectAll("path.link")
+	      .data(links, function(d) { return d.target.id; });
+
+      // Enter any new links at the parent's previous position.
+      link.enter().insert("path", "g")
+	      .attr("class", "link")
+	      .attr("d", function(d) {
+		      var o = {x: source.x0, y: source.y0};
+		      return diagonal({source: o, target: o});
+	      });
+
+      // Transition links to their new position.
+      link.transition()
+	      .duration(duration)
+	      .attr("d", diagonal);
+
+      // Transition exiting nodes to the parent's new position.
+      link.exit().transition()
+	      .duration(duration)
+	      .attr("d", function(d) {
+		      var o = {x: source.x, y: source.y};
+		      return diagonal({source: o, target: o});
+	      })
+	      .remove();
+
+      // Stash the old positions for transition.
+      nodes.forEach(function(d) {
+	      d.x0 = d.x;
+	      d.y0 = d.y;
+      });
+    }
+
+    // Toggle children on click.
+    function click(d) {
+      if (d.children) {
+	      d._children = d.children;
+	      d.children = null;
+      } else {
+	      d.children = d._children;
+	      d._children = null;
+      }
+      update(d);
+    }
   }
 
   // Each step taken needs to be relative to the position and direction of the
@@ -242,27 +407,9 @@ exports.viewer = (function () {
   }
 
   function capture() {
-
-    // My SVG file as s string.
+    // My SVG file as a string.
     var mySVG = $("#graff-view").html();
-    // Create a Data URI.
-    // Load up our image.
-
-    // Set up our canvas on the page before doing anything.
-    var old = document.getElementById('graff-view').children[0];
-    var myCanvas = document.createElement('canvas');
-    myCanvas.width = 640;
-    myCanvas.height = 360;
-
-    document.getElementById('graff-view').replaceChild(myCanvas, old);
-    // Get drawing context for the Canvas
-    var myCanvasContext = myCanvas.getContext('2d');
-    // Load up our image.
-    // Render our SVG image to the canvas once it loads.
-    var source = new Image();
-    source.src = "data:image/svg+xml;base64," + window.btoa(mySVG);
-    myCanvasContext.drawImage(source,0,0);
-    var dataURL = myCanvas.toDataURL();
+    var dataURL = "data:image/svg+xml;base64," + window.btoa(mySVG);
     return '<html><img class="thumbnail" src="' + dataURL + '"/></html>';
   }
 
