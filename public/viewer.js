@@ -44,6 +44,133 @@ exports.viewer = (function () {
     objCodeMirror.setValue(obj);
   }
 
+  var START   = 1;
+  var METHOD  = 2;
+  var OPTION  = 3;
+  var STRING1 = 4;
+  var STRING2 = 5;
+  var END     = 6;
+
+  function parseSrc(str) {
+    var c, brks = [0], state = START;
+    var method = "";
+    var option = "";
+    var arg1 = "";
+    var arg2 = "";
+    var i = 0;
+    while (i < str.length) {
+      c = str[i++];
+      switch (state) {
+      case START:
+        switch (c) {
+        case " ":
+        case "\n":
+        case "\t":
+          continue; // Eat whitespace.
+        case "|":
+          while ((c = str[i++]) !== "\n" && c) {
+            // Eat comment.
+          }
+          continue;
+        default:
+          state = METHOD;
+          method += c;
+          continue;
+        }
+        break;
+      case METHOD:
+        switch (c) {
+        case " ":
+        case "\n":
+        case "\t":
+          state = OPTION;
+          method += " ";
+          continue; // Found end of method.
+        case "|":
+          while ((c = str[i++]) !== "\n" && c) {
+            // Eat comment.
+          }
+          continue;
+        case "\"":
+          state = STRING1;
+          continue; // Found end of method.
+        default:
+          method += c;
+          continue;
+        }
+        break;
+      case OPTION:
+        switch (c) {
+        case "\"":
+          i--;
+          state = STRING1;
+          continue; // Found beginning of string.
+        case "|":
+          while ((c = str[i++]) !== "\n" && c) {
+            // Eat comment.
+          }
+          continue;
+        default:
+          method += c;
+          break;
+        }
+        break;
+      case STRING1:
+        switch (c) {
+        case "\"":
+          while ((c = str[i++]) !== "\"" && c) {
+            arg1 += c;
+          }
+          state = STRING2;
+          continue; // Found end of string.
+        case "|":
+          while ((c = str[i++]) !== "\n" && c) {
+            // Eat comment.
+          }
+          continue;
+        default:
+          continue; // Eat whitespace.
+        }
+        break;
+      case STRING2:
+        switch (c) {
+        case "\"":
+          while ((c = str[i++]) !== "\"" && c) {
+            arg2 += c;
+          }
+          state = END;
+          continue; // Found end of string.
+        case "|":
+          while ((c = str[i++]) !== "\n" && c) {
+            // Eat comment.
+          }
+          continue;
+        default:
+          continue; // Eat whitespace.
+        }
+        continue;
+      case END:
+        // Eat chars until done.
+        break;
+      }
+    }
+    return {
+      method: method,
+      arg1: arg1,
+      arg2: arg2,
+    };
+  }
+
+  function escapeStr(str) {
+    return String(str)
+      .replace(/&(?!\w+;)/g, "&amp;")
+      .replace(/\n/g, " ")
+      .replace(/\\/g, "\\\\")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function update(obj, src, pool) {
     reset();
     exports.src = src;
@@ -51,60 +178,89 @@ exports.viewer = (function () {
     exports.obj = obj;
     var c, i = 0;
     var data = [];
-    while (i < obj.length) {
-      switch ((c = obj.charAt(i++))) {
-      case "S":
-        switch ((c = obj.charAt(i++))) {
-        case "S":
-          lsteps = round(parseInt(obj.substring(i, i + 4), 16));
-          rsteps = round(parseInt(obj.substring(i + 4, i + 8), 16));
-          i += 8;
-          data = data.concat(step(lsteps, rsteps));
-          break;
-        case "T":
-          trackState = true;
-          break;
-        }
-        break;
-      case "P":
-        switch ((c = obj.charAt(i++))) {
-        case "U":
-          penUp();
-          break;
-        case "D":
-          penDown();
-          break;
-        }
-        break;
+    var children = [];
+    var obj = JSON.parse(obj);
+    var names = {};
+    Object.keys(obj).forEach(function (name) {
+      if (obj[name].label === "hide") {
+        return;
       }
-    }
-
-    updateObj(ccode);
-    render({
-      name: src,
-      parent: null,
-      children: objToTree(JSON.parse(obj))
+      var src = parseSrc(obj[name].src);
+      var method = src.method;
+      var arg1 = src.arg1;
+      var arg2 = src.arg2;
+      try {
+        var objStr = obj[name].obj;
+        var objObj = JSON.parse(objStr);
+        var value = objObj.valueSVG;
+        var response = objObj.responseSVG;
+        var score = objObj.score;
+      } catch (e) {
+//        console.log("update() stack=" + e.stack);
+      }
+      var n;
+      if (!(n = names[arg1])) {
+        // Add a node to the pool.
+        names[arg1] = n = {
+          name: arg1,
+          svgText: value ? value : response,
+          parent: "root",
+          children: [],
+          names: {},
+        };
+        children.push(n);
+      }
+      if (arg2) {
+        var o = {};
+        o[arg2] = {
+          name: method,
+          score: score,
+          svgText: response,
+        };
+        n.children = n.children.concat(objToTree(o, arg1, n.names));
+      } else {
+        n.children = n.children.concat({
+          name: method,
+          parent: arg1,
+          score: score,
+          svgText: response,
+        });
+      }
+      breadth++;
     });
-
+    render({
+      name: "root",
+      parent: null,
+      children: children,
+    });
   }
 
   // obj in, tree of nodes out
   var depth = 0;
   var breadth = 0;
-  function objToTree(obj, parent) {
+  function objToTree(obj, parent, names) {
     var nodes = [];
     Object.keys(obj).forEach(function (name) {
-      var n = {
-        name: name,
-        parent: parent,
-      };
-      if (typeof obj[name] === "object") {
-        n.children = objToTree(obj[name], name);
-      } else {
-        n.name += ": " + String(obj[name]);
-        breadth++;
+      var n;
+      if (!(n = names[name])) {
+        names[name] = n = {
+          name: name,
+          parent: parent,
+          children: [],
+          svgText: obj[name].svg,
+        };
+        nodes.push(n);
       }
-      nodes.push(n);
+      if (!obj[name].hasOwnProperty("score")) {
+        n.children = n.children.concat(objToTree(obj[name], name));
+      } else {
+        n.children = n.children.concat({
+          parent: name,
+          name: String(obj[name].name),
+          score: obj[name].score,
+        });
+      }
+      breadth++;
     });
     return nodes;
   }
@@ -168,6 +324,13 @@ exports.viewer = (function () {
 
     d3.select(self.frameElement).style("height", "500px");
 
+    function unescapeXML(str) {
+      return String(str)
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, "\"");
+    }
+
     function update(source) {
 
       // Compute the new tree layout.
@@ -189,7 +352,38 @@ exports.viewer = (function () {
 
       nodeEnter.append("circle")
 	      .attr("r", 1e-6)
+	      .style("stroke", function(d) {
+          if (d.svgText) {
+            d = d;
+          }
+          var strokeColor;
+          switch (d.score) {
+          case 1:
+            strokeColor = "rgb(100, 255, 100)";
+            break;
+          case 0:
+          case -1:
+            strokeColor = "rgb(255, 100, 100)";
+            break;
+          default:
+            strokeColor = "lightsteelblue";
+            break;
+          }
+          return strokeColor;
+        })
 	      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+      nodeEnter.append("image")
+        .attr("xlink:href", function (d) {
+          if (d.svgText) {
+            console.log(unescapeXML(d.svgText));
+            return "data:image/svg+xml;utf8," + unescapeXML(d.svgText);
+          }
+          return "";
+        })
+        .attr("width", "30")
+        .attr("height", "30");
+	      //.style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
       nodeEnter.append("text")
 	      .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
@@ -205,7 +399,9 @@ exports.viewer = (function () {
 
       nodeUpdate.select("circle")
 	      .attr("r", 4)
-	      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+	      .style("fill", function(d) {
+          return d._children ? "lightsteelblue" : "#fff";
+        });
 
       nodeUpdate.select("text")
 	      .style("fill-opacity", 1);

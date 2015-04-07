@@ -1,6 +1,6 @@
 {
-  "name": "L101.artcompiler.com",
-  "description": "L101 compiler service",
-  "repository": "https://github.com/artcompiler/L101",
+  "name": "L109.artcompiler.com",
+  "description": "L109 compiler service",
+  "repository": "https://github.com/artcompiler/L109",
   "keywords": ["node", "express", "static"]
 }
