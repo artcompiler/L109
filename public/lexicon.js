@@ -49,7 +49,7 @@ exports.globalLexicon = {
     "print" : { "tk": 0x01, "cls": "function", "length": 1 },
 
     "achievement" : { "tk": 0x01, "name": "ACHIEVEMENT", "cls": "function", "length": 1 },
-    "data" : { "tk": 0x01, "name": "DATA", "cls": "function", "length": 2 },
+    "data" : { "tk": 0x01, "name": "DATA", "cls": "function", "length": 1 },
     "battlepet" : { "tk": 0x01, "name": "BATTLE-PET", "cls": "function", "length": 2 },
     "challenge" : { "tk": 0x01, "name": "CHALLENGE", "cls": "function", "length": 1 },
 
