@@ -163,12 +163,7 @@ exports.viewer = (function () {
 
   function escapeStr(str) {
     return String(str)
-      .replace(/&(?!\w+;)/g, "&amp;")
-      .replace(/\n/g, " ")
       .replace(/\\/g, "\\\\")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
   }
 
   function update(obj, src, pool) {
@@ -190,7 +185,8 @@ exports.viewer = (function () {
       var arg1 = src.arg1;
       var arg2 = src.arg2;
       try {
-        var objStr = obj[name].obj;
+        var objStr = escapeStr(obj[name].obj);
+//        console.log("update() objStr=" + objStr);
         var objObj = JSON.parse(objStr);
         var value = objObj.valueSVG;
         var response = objObj.responseSVG;
@@ -211,7 +207,8 @@ exports.viewer = (function () {
         children.push(n);
       }
       if (arg2) {
-        var o = {};
+        var o = {
+        };
         o[arg2] = {
           name: method,
           score: score,
@@ -223,7 +220,6 @@ exports.viewer = (function () {
           name: method,
           parent: arg1,
           score: score,
-          svgText: response,
         });
       }
       breadth++;
@@ -247,7 +243,7 @@ exports.viewer = (function () {
           name: name,
           parent: parent,
           children: [],
-          svgText: obj[name].svg,
+          svgText: obj[name].svgText,
         };
         nodes.push(n);
       }
@@ -267,10 +263,27 @@ exports.viewer = (function () {
 
   var margin = {top: 20, right: 120, bottom: 20, left: 120};
 
+  var EX = 7;
+  function getWidth(str) {
+    var begin = str.indexOf("width") + 12;  // width=&quot;
+    str = str.substring(begin);
+    var end = str.indexOf("ex");
+    str = str.substring(0, end);
+    return +str * EX;
+  }
+
+  function getHeight(str) {
+    var begin = str.indexOf("height") + 13; // height=&quot;
+    str = str.substring(begin);
+    var end = str.indexOf("ex");
+    str = str.substring(0, end);
+    return +str * EX;
+  }
+
   function render(root) {
     // ************** Generate the tree diagram	 *****************
 	  var width = 1960 - margin.right - margin.left;
-	  var height = (breadth * 14) - margin.top - margin.bottom;
+	  var height = (breadth * 14 * 2) - margin.top - margin.bottom;
 	  
     var i = 0,
 	  duration = 750,
@@ -303,8 +316,8 @@ exports.viewer = (function () {
 	    '}' +
 	    '.link {' +
 	    'fill: none;' +
-	    'stroke: #ccc;' +
-	    'stroke-width: 2px;' +
+	    'stroke: #eee;' +
+	    'stroke-width: 1px;' +
 	    '}' +    
       ']]>' +
       '</style>' +
@@ -331,6 +344,19 @@ exports.viewer = (function () {
         .replace(/&quot;/g, "\"");
     }
 
+    function getScore(d) {
+      // Get the current score or the average of the children's scores.
+      if (d.children === undefined) {
+        return d.score;
+      }
+      var score = 0;
+      d.children.forEach(function (c) {
+        score += getScore(c);
+      });
+      score = score / d.children.length;
+      return isNaN(score) ? undefined : score;
+    }
+
     function update(source) {
 
       // Compute the new tree layout.
@@ -338,7 +364,10 @@ exports.viewer = (function () {
 	    links = tree.links(nodes);
 
       // Normalize for fixed-depth.
-      nodes.forEach(function(d) { d.y = d.depth * 180; });
+      var lastHeight = 0;
+      nodes.forEach(function(d) {
+        d.y = d.depth * 280;
+      });
 
       // Update the nodes…
       var node = svg.selectAll("g.node")
@@ -353,11 +382,8 @@ exports.viewer = (function () {
       nodeEnter.append("circle")
 	      .attr("r", 1e-6)
 	      .style("stroke", function(d) {
-          if (d.svgText) {
-            d = d;
-          }
           var strokeColor;
-          switch (d.score) {
+          switch (getScore(d)) {
           case 1:
             strokeColor = "rgb(100, 255, 100)";
             break;
@@ -365,8 +391,12 @@ exports.viewer = (function () {
           case -1:
             strokeColor = "rgb(255, 100, 100)";
             break;
-          default:
+          case undefined:
             strokeColor = "lightsteelblue";
+            break;
+          default:
+            // Some red, some green
+            strokeColor = "rgb(255, 255, 100)";
             break;
           }
           return strokeColor;
@@ -381,15 +411,42 @@ exports.viewer = (function () {
           }
           return "";
         })
-        .attr("width", "30")
-        .attr("height", "30");
-	      //.style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+        .attr("width", function (d) {
+          if (d.svgText) {
+            return getWidth(d.svgText);
+          }
+          return 0;
+        })
+        .attr("height", function (d) {
+          if (d.svgText) {
+            var h = getHeight(d.svgText);
+            return h;
+          }
+          return 0;
+        })
+        .attr("x", function (d) {
+          if (d.svgText) {
+            return -10 - getWidth(d.svgText);
+          }
+          return 0;
+        })
+        .attr("y", function (d) {
+          if (d.svgText) {
+            return -getHeight(d.svgText) / 2;
+          }
+          return 0;
+        });
 
       nodeEnter.append("text")
 	      .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
 	      .attr("dy", ".35em")
 	      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-	      .text(function(d) { return d.name; })
+	      .text(function(d) {
+          if (!d.svgText) {
+            return d.name;
+          }
+          return "";
+        })
 	      .style("fill-opacity", 1e-6);
 
       // Transition nodes to their new position.
@@ -462,144 +519,6 @@ exports.viewer = (function () {
       }
       update(d);
     }
-  }
-
-  // Each step taken needs to be relative to the position and direction of the
-  // current state.
-  function step(lsteps, rsteps) {
-    ccode += "step(" + lsteps + ", " + rsteps + ");\n";
-    var dirL = lsteps < 0 ? 1 : -1;
-    var dirR = rsteps < 0 ? 1 : -1;
-    lsteps = Math.abs(lsteps);
-    rsteps = Math.abs(rsteps);
-    var points = [];
-    var offset = 0;
-    var delta = 0;
-    var args = [];
-    if (lsteps >= rsteps) {
-      if (rsteps > 0) {
-        delta = (lsteps - rsteps) / rsteps;  // 3
-        for ( ; rsteps > 0; ) {
-          offset += delta;  // Each lstep is equal to rstep plus delta.
-          stepOneLeft(dirL);
-          stepOneRight(dirR);
-          lsteps--;
-          rsteps--;
-          ink(args);
-          for(; offset >= 1; offset--) {  // 3 * 0 | 3 * 1
-            stepOneLeft(dirL);
-            lsteps--;
-            ink(args);
-          }
-        }
-      }
-      // rsteps === 0. only lsteps left
-      for(; lsteps > 0; lsteps--) {  // 3 * 0 | 3 * 1
-        stepOneLeft(dirL);
-        ink(args);
-      }
-    } else {
-      if (lsteps > 0) {
-        delta = (rsteps - lsteps) / lsteps;
-        for ( ; lsteps > 0; ) {
-          offset += delta;
-          stepOneLeft(dirL);
-          stepOneRight(dirR);
-          lsteps--;
-          rsteps--;
-          ink(args);
-          for(; offset >= 1; offset--) {  // 3 * 0 | 3 * 1
-            stepOneRight(dirR);
-            rsteps--;
-            ink(args);
-          }
-        }
-      }
-      // lsteps === 0. only rsteps left
-      for(; rsteps > 0; rsteps--) {  // 3 * 0 | 3 * 1
-        stepOneRight(dirR);
-        ink(args);
-      }
-    }
-    return args;
-
-    function checkInk() {
-      var dx = penX - lastInkX;
-      var dy = penY - lastInkY;
-      var d = Math.sqrt(dx * dx + dy * dy);
-      if (d > INK_DISTANCE) {
-        needsInk = true;
-        lastInkX = penX;
-        lastInkY = penY;
-      } else {
-        needsInk = false;
-      }
-    }
-
-    function ink(args) {
-      checkInk();
-      if (penState && needsInk) {
-        args.push({
-          "tag": "ellipse",
-          "cx": penX,
-          "cy": penY,
-          "r": INK_WEIGHT,
-          "fill": "rgba(0,100,200," + INK_OPACITY + ")",
-          "stroke": "rgba(0,0,0,0)",
-        });
-      }
-      if (trackState) {
-        args.push({
-          "tag": "ellipse",
-          "cx": leftX,
-          "cy": leftY,
-          "r": .5,
-          "fill": "rgba(255,0,0,.1)",
-          "stroke": "rgba(0,0,0,0)",
-        }, {
-          "tag": "ellipse",
-          "cx": rightX,
-          "cy": rightY,
-          "r": .5,
-          "fill": "rgba(0,255,0,.1)",
-          "stroke": "rgba(0,0,0,0)",
-        });
-      }
-    }
-  }
-
-  function stepOneLeft(dir) {
-    angle -= dir * STEP_LENGTH / RADIUS;
-    var dx = RADIUS * Math.cos(angle);
-    var dy = RADIUS * Math.sin(angle);
-    leftX = rightX + dx;
-    leftY = rightY + dy;
-    penX = rightX + dx/2;
-    penY = rightY + dy/2;
-  }
-
-  function stepOneRight(dir) {
-    angle += dir * STEP_LENGTH / RADIUS;
-    var dx = RADIUS * Math.cos(Math.PI + angle);
-    var dy = RADIUS * Math.sin(Math.PI + angle);
-    rightX = leftX + dx;
-    rightY = leftY + dy;
-    penX = leftX + dx/2;
-    penY = leftY + dy/2;
-  }
-
-  function penUp() {
-    ccode += "penUp();\n";
-    penState = false;
-  }
-
-  function penDown() {
-    ccode += "penDown();\n";
-    penState = true;
-  }
-
-  function showTrack() {
-    trackState = true;
   }
 
   function capture() {
