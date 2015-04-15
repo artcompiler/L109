@@ -523,8 +523,8 @@ exports.viewer = (function () {
 
   function capture() {
     // My SVG file as a string.
-    var mySVG = $("#graff-view").html();
-    var dataURL = "data:image/svg+xml;base64," + window.btoa(mySVG);
+    var mySVG = $("#graff-view svg").html();
+    var dataURL = "data:image/svg+xml," + mySVG;
     return '<html><img class="thumbnail" src="' + dataURL + '"/></html>';
   }
 
