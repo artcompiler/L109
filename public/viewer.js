@@ -523,7 +523,7 @@ exports.viewer = (function () {
 
   function capture() {
     // My SVG file as a string.
-    var mySVG = $("#graff-view svg").html();
+    var mySVG = $("#graff-view").html();
     // Create a Data URI.
     // Load up our image.
     // Set up our canvas on the page before doing anything.
