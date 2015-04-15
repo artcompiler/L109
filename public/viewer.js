@@ -526,22 +526,22 @@ exports.viewer = (function () {
     var mySVG = $("#graff-view svg").html();
     // Create a Data URI.
     // Load up our image.
-
     // Set up our canvas on the page before doing anything.
     var old = document.getElementById('graff-view').children[0];
     var myCanvas = document.createElement('canvas');
-    myCanvas.width = 640;
-    myCanvas.height = 360;
-
+    var bbox = $("#graff-view svg g")[0].getBBox();
+    myCanvas.height = bbox.height + 12;
+    myCanvas.width = bbox.width + 40;
     document.getElementById('graff-view').replaceChild(myCanvas, old);
     // Get drawing context for the Canvas
     var myCanvasContext = myCanvas.getContext('2d');
     // Load up our image.
     // Render our SVG image to the canvas once it loads.
     var source = new Image();
-    source.src = "data:image/svg+xml," + mySVG;
+    source.src = "data:image/svg+xml;base64," + window.btoa(mySVG);
     myCanvasContext.drawImage(source,0,0);
     var dataURL = myCanvas.toDataURL();
+    document.getElementById('graff-view').replaceChild(old, myCanvas);
     return '<html><img class="thumbnail" src="' + dataURL + '"/></html>';
 //    var dataURL = "data:image/svg+xml," + mySVG;
 //    return '<html><img class="thumbnail" src="' + dataURL + '"/></html>';
