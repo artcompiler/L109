@@ -538,7 +538,7 @@ exports.viewer = (function () {
     // Load up our image.
     // Render our SVG image to the canvas once it loads.
     var source = new Image();
-    source.src = "data:image/svg+xml;base64," + window.btoa(mySVG);
+    source.src = "data:image/svg+xml," + mySVG;
     myCanvasContext.drawImage(source,0,0);
     var dataURL = myCanvas.toDataURL();
     document.getElementById('graff-view').replaceChild(old, myCanvas);
