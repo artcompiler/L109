@@ -40,7 +40,6 @@ exports.viewer = (function () {
   }
 
   function updateObj(obj) {
-    console.log("updateObj() obj=" + JSON.stringify(obj));
     objCodeMirror.setValue(obj);
   }
 
@@ -525,6 +524,7 @@ exports.viewer = (function () {
     // My SVG file as a string.
     var mySVG = $("#graff-view").html();
     var dataURL = "data:image/svg+xml," + mySVG;
+    console.log(JSON.stringify(mySVG));
     return '<html><script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script><img class="thumbnail" src="' + dataURL + '"/></html>';
   }
 
