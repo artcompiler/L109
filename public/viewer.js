@@ -525,7 +525,7 @@ exports.viewer = (function () {
     // My SVG file as a string.
     var mySVG = $("#graff-view").html();
     console.log(mySVG);
-    var dataURL = "data:image/svg+xml; utf8," + mySVG;
+    var dataURL = "data:image/svg+xml; utf8," + unescapeXML(mySVG);
     return '<html><img class="thumbnail" src="' + dataURL + '"/></html>';
   }
 
