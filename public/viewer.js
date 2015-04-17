@@ -525,7 +525,7 @@ exports.viewer = (function () {
     var mySVG = $("#graff-view").html();
     console.log(mySVG);
     var dataURL = "data:image/svg+xml;base64," + window.btoa(mySVG);
-    return '<html><script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script><img class="thumbnail" src="' + dataURL + '"/></html>';
+    return '<html><img class="thumbnail" src="' + dataURL + '"/></html>';
   }
 
   return {
