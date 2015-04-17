@@ -405,8 +405,9 @@ exports.viewer = (function () {
       nodeEnter.append("image")
         .attr("xlink:href", function (d) {
           if (d.svgText) {
-            console.log(unescapeXML(d.svgText));
-            return "data:image/svg+xml;utf8," + unescapeXML(d.svgText);
+//            console.log(unescapeXML(d.svgText));
+//            return "data:image/svg+xml;utf8," + unescapeXML(d.svgText);
+            return "data:image/svg+xml;base64," + window.btoa(unescapeXML(d.svgText));
           }
           return "";
         })
