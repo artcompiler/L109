@@ -279,6 +279,13 @@ exports.viewer = (function () {
     return +str * EX;
   }
 
+  function unescapeXML(str) {
+    return String(str)
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, "\"");
+  }
+
   function render(root) {
     // ************** Generate the tree diagram	 *****************
 	  var width = 1960 - margin.right - margin.left;
@@ -335,13 +342,6 @@ exports.viewer = (function () {
     update(root);
 
     d3.select(self.frameElement).style("height", "500px");
-
-    function unescapeXML(str) {
-      return String(str)
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, "\"");
-    }
 
     function getScore(d) {
       // Get the current score or the average of the children's scores.
