@@ -51,6 +51,9 @@ exports.viewer = (function () {
   var END     = 6;
 
   function parseSrc(str) {
+    if (!str) {
+      return;
+    }
     var c, brks = [0], state = START;
     var method = "";
     var option = "";
@@ -185,13 +188,11 @@ exports.viewer = (function () {
       var arg2 = src.arg2;
       try {
         var objStr = escapeStr(obj[name].obj);
-//        console.log("update() objStr=" + objStr);
         var objObj = JSON.parse(objStr);
         var value = objObj.valueSVG;
         var response = objObj.responseSVG;
         var score = objObj.score;
       } catch (e) {
-//        console.log("update() stack=" + e.stack);
       }
       var n;
       if (!(n = names[arg1])) {
