@@ -189,9 +189,7 @@ exports.viewer = (function () {
       try {
         var objStr = escapeStr(obj[name].obj);
         var objObj = JSON.parse(objStr);
-        var value =
-          objObj.valueSVG === "" ? "<svg height='25' width='100%'><text>" + arg1 + "</text></svg>"
-                                 : objObj.valueSVG;
+        var value = objObj.valueSVG === objObj.valueSVG;
         var response = objObj.responseSVG;
         var score = objObj.score;
       } catch (e) {
