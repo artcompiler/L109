@@ -47,7 +47,7 @@ window.exports.viewer = (function () {
 
   function stripNewlines(str) {
     return String(str)
-      .replace(/\n/g, " ")
+      .replace(/\\n/g, " ")
   }
 
   var SIZE = 100;
