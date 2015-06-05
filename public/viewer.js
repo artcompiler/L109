@@ -54,17 +54,19 @@ window.exports.viewer = (function () {
     var children = [];
     var names = {};
     Object.keys(obj).forEach(function (name) {
-      if (obj[name].label === "hide") {
+      var val = obj[name];
+      if (val.label === "hide") {
         return;
       }
-      var item = obj[name].id;
-      var src = obj[name].src;
+      var item = val.id;
+      var src = val.src;
       var srcObj = parseSrc(src);
       var method = srcObj.method;
       var value = srcObj.arg2 ? srcObj.arg1 : null;
       var response = srcObj.arg2 ? srcObj.arg2 : srcObj.arg1;
       try {
-        var objStr = escapeStr(unescapeXML(obj[name].obj));
+        var objectCode = val.objectCode ? val.objectCode : val.obj;
+        var objStr = escapeStr(unescapeXML(objectCode));
         var objObj = JSON.parse(objStr);
         var valueSVG = objObj.valueSVG;
         var responseSVG = objObj.responseSVG;
