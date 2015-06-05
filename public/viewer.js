@@ -67,6 +67,7 @@ window.exports.viewer = (function () {
       try {
         var objectCode = val.objectCode ? val.objectCode : val.obj;
         var objStr = escapeStr(unescapeXML(objectCode));
+        console.log(objStr);
         var objObj = JSON.parse(objStr);
         var valueSVG = objObj.valueSVG;
         var responseSVG = objObj.responseSVG;
