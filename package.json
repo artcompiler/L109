@@ -1,22 +1,21 @@
 {
-  "name": "L109",
+  "name": "L100",
   "version": "0.1.0",
-  "description": "L109 compiler as a service",
+  "description": "L100 compiler as a service",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "express": "~3.4.x",
-    "underscore": "1.4.x",
-    "requirejs": "latest"
+    "underscore": "1.4.x"
   },
   "engines": {
     "node": "0.10.x"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/artcompiler/L109"
+    "url": "https://github.com/artcompiler/L100"
   },
   "keywords": [
     "node",

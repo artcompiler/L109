@@ -1,46 +1,120 @@
 /* -*- Mode: js; js-indent-level: 2; indent-tabs-mode: nil; tab-width: 2 -*- */
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 /* copyright (c) 2014, Jeff Dyer */
-
-exports.viewer = (function () {
-
-  var CENTER_X = 320;
-  var CENTER_Y = 180;
-  var SCALE = 2;
-  var RADIUS = 100*SCALE;
-  var STEP_LENGTH = .1745*SCALE;
-  var leftX = 0, leftY = 0, rightX = 0, rightY = 0;
-  var angle = 0;
-  var penX = 0, penY = 0;
-  var penState = true;
-  var trackState = false;
-  var lastInkX = Number.MAX_VALUE, lastInkY = Number.MAX_VALUE, needsInk = true;
-  var INK_WEIGHT = 1;
-  var INK_DISTANCE = INK_WEIGHT / 2;
-  var INK_OPACITY = 0.4;
-  var ccode = "";
-
-  function reset() {
-    angle = 0;
-    leftX = CENTER_X + RADIUS/2;
-    leftY = CENTER_Y;
-    rightX = CENTER_X - RADIUS/2;
-    rightY = CENTER_Y;
-    penX = 0;
-    penY = 0;
-    penState = false;
-    trackState = false;
-    ccode = "";
-    depth = 0;
-    breadth = 0;
+window.viewer = (function () {
+  var height;
+  function clickThumbnail(e, id) {
+    showWorkspace();
+    $.get("http://"+location.host+"/code/"+id, function (data) {
+      updateSrc(data[0].id, data[0].src);
+    });
   }
 
-  function round(n) {
-    return n > 0x7FFF ? n - 0x10000 : n;
+  function hideThumbnail(e, id) {
+    $.ajax({
+      type: "PUT",
+      url: "/label",
+      data: {
+        id: id,
+        label: "hide",
+      },
+      dataType: "text",
+      success: function(data) {
+        hideItem(id);
+      },
+      error: function(xhr, msg, err) {
+        console.log(msg + " " + err);
+      }
+    });
   }
 
-  function updateObj(obj) {
-    objCodeMirror.setValue(obj);
+  function hideItem(id) {
+    $(".gallery-panel #" + id).hide();
+  }
+
+  function stripHTML(src) {
+    var start = src.indexOf("<html>") + "<html>".length;
+    var stop = src.indexOf("</html>");
+    return src.substring(start, stop);
+  }
+
+  function escapeStr(str) {
+    return String(str)
+      .replace(/\\/g, "\\\\")
+      .replace(/{/g, "\{")
+      .replace(/}/g, "\}")
+  }
+
+  var SIZE = 100;
+  var RECT = "<svg xmlns='http://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
+
+  function update(el, obj, src, pool) {
+    var c, i = 0;
+    var data = [];
+    var children = [];
+    var names = {};
+    Object.keys(obj).forEach(function (name) {
+      if (obj[name].label === "hide") {
+        return;
+      }
+      var item = obj[name].id;
+      var src = obj[name].src;
+      var srcObj = parseSrc(src);
+      var method = srcObj.method;
+      var value = srcObj.arg2 ? srcObj.arg1 : null;
+      var response = srcObj.arg2 ? srcObj.arg2 : srcObj.arg1;
+      try {
+        var objStr = escapeStr(unescapeXML(obj[name].obj));
+        var objObj = JSON.parse(objStr);
+        var valueSVG = objObj.valueSVG;
+        var responseSVG = objObj.responseSVG;
+        var score = objObj.score;
+        var n;
+        if (!(n = names[response])) {
+          // Add a node to the pool.
+          names[response] = n = {
+            name: response,
+            svg: unescapeXML(responseSVG ? responseSVG : RECT),
+            parent: "root",
+            children: [],
+            names: {},
+            size: SIZE,
+          };
+          children.push(n);
+        }
+        if (value) {
+          var o = {
+          };
+          o[method] = {
+            name: value,
+            score: score,
+            size: SIZE,
+            svg: unescapeXML(valueSVG ? valueSVG : RECT),
+            src: src,
+            item: item,
+          };
+          n.children = n.children.concat(objToTree(o, response, n.names));
+        } else {
+          n.children = n.children.concat({
+            name: method,
+            parent: response,
+            score: score,
+            size: SIZE,
+            svg: RECT,
+            src: src,
+            item: item,
+          });
+        }
+        breadth++;
+      } catch (e) {
+      }
+    });
+    render(el, {
+      name: src,
+      parent: null,
+      children: children,
+      svg: RECT,
+    });
   }
 
   var START   = 1;
@@ -123,8 +197,15 @@ exports.viewer = (function () {
           while ((c = str[i++]) !== "\"" && c) {
             arg1 += c;
           }
-          state = STRING2;
-          continue; // Found end of string.
+          if (method.indexOf("is") >= 0 &&
+              method.indexOf("isUnit") < 0) {
+            // One argument function
+            state = END;
+            continue;
+          } else {
+            state = STRING2;
+            continue; // Found end of string.
+          }
         case "|":
           while ((c = str[i++]) !== "\n" && c) {
             // Eat comment.
@@ -163,74 +244,6 @@ exports.viewer = (function () {
     };
   }
 
-  function escapeStr(str) {
-    return String(str)
-      .replace(/\\/g, "\\\\")
-  }
-
-  function update(obj, src, pool) {
-    reset();
-    exports.src = src;
-    exports.pool = pool;
-    exports.obj = obj;
-    var c, i = 0;
-    var data = [];
-    var children = [];
-    var obj = JSON.parse(obj);
-    var names = {};
-    Object.keys(obj).forEach(function (name) {
-      if (obj[name].label === "hide") {
-        return;
-      }
-      var src = parseSrc(obj[name].src);
-      var method = src.method;
-      var arg1 = src.arg1;
-      var arg2 = src.arg2;
-      try {
-        var objStr = escapeStr(obj[name].obj);
-        var objObj = JSON.parse(objStr);
-        var value = objObj.valueSVG;
-        var response = objObj.responseSVG;
-        var score = objObj.score;
-      } catch (e) {
-      }
-      var n;
-      if (!(n = names[arg1])) {
-        // Add a node to the pool.
-        names[arg1] = n = {
-          name: arg1,
-          svgText: value ? value : response,
-          parent: "root",
-          children: [],
-          names: {},
-        };
-        children.push(n);
-      }
-      if (arg2) {
-        var o = {
-        };
-        o[arg2] = {
-          name: method,
-          score: score,
-          svgText: response,
-        };
-        n.children = n.children.concat(objToTree(o, arg1, n.names));
-      } else {
-        n.children = n.children.concat({
-          name: method,
-          parent: arg1,
-          score: score,
-        });
-      }
-      breadth++;
-    });
-    render({
-      name: "root",
-      parent: null,
-      children: children,
-    });
-  }
-
   // obj in, tree of nodes out
   var depth = 0;
   var breadth = 0;
@@ -243,7 +256,8 @@ exports.viewer = (function () {
           name: name,
           parent: parent,
           children: [],
-          svgText: obj[name].svgText,
+          svg: RECT,
+          size: SIZE,
         };
         nodes.push(n);
       }
@@ -254,6 +268,10 @@ exports.viewer = (function () {
           parent: name,
           name: String(obj[name].name),
           score: obj[name].score,
+          size: SIZE,
+          svg: obj[name].svg,
+          src: obj[name].src,
+          item: obj[name].item,
         });
       }
       breadth++;
@@ -261,277 +279,216 @@ exports.viewer = (function () {
     return nodes;
   }
 
-  var margin = {top: 20, right: 120, bottom: 20, left: 120};
+  function unescapeXML(str) {
+    return String(str)
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, "'");
+  }
 
-  var EX = 7;
+  function capture(el) {
+    return d3.select(el.parentNode).html();
+  }
+
+  var EX = 6; // px
   function getWidth(str) {
-    var begin = str.indexOf("width") + 12;  // width=&quot;
+    var unit = 1;
+    var begin = str.indexOf("width=") + 7;  // width="
     str = str.substring(begin);
-    var end = str.indexOf("ex");
+    var end = str.indexOf("px");
+    if (end < 0) {
+      end = str.indexOf("ex");
+      unit = EX;
+    }
     str = str.substring(0, end);
-    return +str * EX;
+    return +str * unit;
   }
 
   function getHeight(str) {
-    var begin = str.indexOf("height") + 13; // height=&quot;
+    var unit = 1;
+    var begin = str.indexOf("height") + 8;  // height="
     str = str.substring(begin);
-    var end = str.indexOf("ex");
+    var end = str.indexOf("px");
+    if (end < 0) {
+      end = str.indexOf("ex");
+      unit = EX;
+    }
     str = str.substring(0, end);
-    return +str * EX;
-  }
-
-  function unescapeXML(str) {
-    return String(str)
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, "\"");
-  }
-
-  function render(root) {
-    // ************** Generate the tree diagram	 *****************
-	  var width = 1960 - margin.right - margin.left;
-	  var height = (breadth * 14 * 2) - margin.top - margin.bottom;
-	  
-    var i = 0,
-	  duration = 750,
-	  root;
-
-    var tree = d3.layout.tree()
-	    .size([height, width]);
-
-    var diagonal = d3.svg.diagonal()
-	    .projection(function(d) { return [d.y, d.x]; });
-
-    var svgStr =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360">' +
-      '<style type="text/css" >' +
-      '<![CDATA[' +
-      'circle {' +
-      '  stroke: #006600;' +
-      '  fill:   #00cc00;' +
-      '}' +
-	    '.node {' +
-		  'cursor: pointer;' +
-	    '}' +
-	    '.node circle {' +
-	    'fill: #fff;' +
-	    'stroke: steelblue;' +
-	    'stroke-width: 3px;' +
-	    '}' +
-	    '.node text {' +
-	    'font: 12px sans-serif;' +
-	    '}' +
-	    '.link {' +
-	    'fill: none;' +
-	    'stroke: #eee;' +
-	    'stroke-width: 1px;' +
-	    '}' +    
-      ']]>' +
-      '</style>' +
-      '</svg>';
-
-    $("#graff-view").html(svgStr);
-    var svg = d3.select("#graff-view svg")
-      .attr("width", width + margin.right + margin.left)
-	    .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
-    root.x0 = height / 2;
-    root.y0 = 0;
-
-    update(root);
-
-    d3.select(self.frameElement).style("height", "500px");
-
-    function getScore(d) {
-      // Get the current score or the average of the children's scores.
-      if (d.children === undefined) {
-        return d.score;
-      }
-      var score = 0;
-      d.children.forEach(function (c) {
-        score += getScore(c);
-      });
-      score = score / d.children.length;
-      return isNaN(score) ? undefined : score;
-    }
-
-    function update(source) {
-
-      // Compute the new tree layout.
-      var nodes = tree.nodes(root).reverse(),
-	    links = tree.links(nodes);
-
-      // Normalize for fixed-depth.
-      var lastHeight = 0;
-      nodes.forEach(function(d) {
-        d.y = d.depth * 280;
-      });
-
-      // Update the nodes…
-      var node = svg.selectAll("g.node")
-	      .data(nodes, function(d) { return d.id || (d.id = ++i); });
-
-      // Enter any new nodes at the parent's previous position.
-      var nodeEnter = node.enter().append("g")
-	      .attr("class", "node")
-	      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-	      .on("click", click);
-
-      nodeEnter.append("circle")
-	      .attr("r", 1e-6)
-	      .style("stroke", function(d) {
-          var strokeColor;
-          switch (getScore(d)) {
-          case 1:
-            strokeColor = "rgb(100, 255, 100)";
-            break;
-          case 0:
-          case -1:
-            strokeColor = "rgb(255, 100, 100)";
-            break;
-          case undefined:
-            strokeColor = "lightsteelblue";
-            break;
-          default:
-            // Some red, some green
-            strokeColor = "rgb(255, 255, 100)";
-            break;
-          }
-          return strokeColor;
-        })
-	      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-
-      nodeEnter.append("image")
-        .attr("xlink:href", function (d) {
-          if (d.svgText) {
-//            console.log(unescapeXML(d.svgText));
-            return "data:image/svg+xml;utf8," + unescapeXML(d.svgText);
-//            return "data:image/svg+xml;base64," + window.btoa(unescapeXML(d.svgText));
-          }
-          return "";
-        })
-        .attr("width", function (d) {
-          if (d.svgText) {
-            return getWidth(d.svgText);
-          }
-          return 0;
-        })
-        .attr("height", function (d) {
-          if (d.svgText) {
-            var h = getHeight(d.svgText);
-            return h;
-          }
-          return 0;
-        })
-        .attr("x", function (d) {
-          if (d.svgText) {
-            return -10 - getWidth(d.svgText);
-          }
-          return 0;
-        })
-        .attr("y", function (d) {
-          if (d.svgText) {
-            return -getHeight(d.svgText) / 2;
-          }
-          return 0;
-        });
-
-      nodeEnter.append("text")
-	      .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
-	      .attr("dy", ".35em")
-	      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-	      .text(function(d) {
-          if (!d.svgText) {
-            return d.name;
-          }
-          return "";
-        })
-	      .style("fill-opacity", 1e-6);
-
-      // Transition nodes to their new position.
-      var nodeUpdate = node.transition()
-	      .duration(duration)
-	      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
-
-      nodeUpdate.select("circle")
-	      .attr("r", 4)
-	      .style("fill", function(d) {
-          return d._children ? "lightsteelblue" : "#fff";
-        });
-
-      nodeUpdate.select("text")
-	      .style("fill-opacity", 1);
-
-      // Transition exiting nodes to the parent's new position.
-      var nodeExit = node.exit().transition()
-	      .duration(duration)
-	      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
-	      .remove();
-
-      nodeExit.select("circle")
-	      .attr("r", 1e-6);
-
-      nodeExit.select("text")
-	      .style("fill-opacity", 1e-6);
-
-      // Update the links…
-      var link = svg.selectAll("path.link")
-	      .data(links, function(d) { return d.target.id; });
-
-      // Enter any new links at the parent's previous position.
-      link.enter().insert("path", "g")
-	      .attr("class", "link")
-	      .attr("d", function(d) {
-		      var o = {x: source.x0, y: source.y0};
-		      return diagonal({source: o, target: o});
-	      });
-
-      // Transition links to their new position.
-      link.transition()
-	      .duration(duration)
-	      .attr("d", diagonal);
-
-      // Transition exiting nodes to the parent's new position.
-      link.exit().transition()
-	      .duration(duration)
-	      .attr("d", function(d) {
-		      var o = {x: source.x, y: source.y};
-		      return diagonal({source: o, target: o});
-	      })
-	      .remove();
-
-      // Stash the old positions for transition.
-      nodes.forEach(function(d) {
-	      d.x0 = d.x;
-	      d.y0 = d.y;
-      });
-    }
-
-    // Toggle children on click.
-    function click(d) {
-      if (d.children) {
-	      d._children = d.children;
-	      d.children = null;
-      } else {
-	      d.children = d._children;
-	      d._children = null;
-      }
-      update(d);
-    }
-  }
-
-  function capture() {
-    // My SVG file as a string.
-    var mySVG = $("#graff-view").html();
-    console.log(mySVG);
-    var dataURL = "data:image/svg+xml; utf8," + unescapeXML(mySVG);
-    return '<html><img class="thumbnail" src="' + dataURL + '"/></html>';
+    return +str * unit;
   }
 
   return {
     update: update,
     capture: capture,
   };
+
+  function countLeaves(obj) {
+    var count = 0;
+    if (obj.children) {
+      obj.children.forEach(function (o) {
+        count += countLeaves(o);
+      });
+    } else {
+      count = 1;
+    }
+    return count;
+  }
+
+  var MIN_HEIGHT = 20;
+
+  function render(el, root) {
+    d3.selectAll("g").remove();
+    var w = 1400,
+        h = countLeaves(root) * 20,
+        x = d3.scale.linear().range([0, w]),
+        y = d3.scale.linear().range([0, h]);
+
+    d3.select(el)
+      .attr("width", w)
+      .attr("height", h)
+
+    var partition = d3.layout.partition()
+        .value(function(d) {
+          return d.size;
+        });
+
+    var g = d3.select(el).selectAll("g")
+      .data(partition.nodes(root))
+      .enter().append("svg:g")
+      .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
+      .on("click", click);
+
+    
+    var kx = w / root.dx,
+    ky = h / 1;
+
+    g.append("svg:rect")
+      .attr("width", root.dy * kx)
+      .attr("height", function(d) { return d.dx * ky; })
+      .attr("class", function(d) { return d.children ? "parent" : "child"; })
+	    .style("fill", function(d) {
+        var strokeColor;
+        if (d.name ===  "root") {
+          c = "#DDD";
+        } else {
+          switch (d.score) {
+          case 1:
+            c = "rgb(150, 255, 150)";
+            break;
+          case -1:
+            c = "rgb(255, 150, 150)";
+            break;
+          default:
+            // Some red, some green
+            c = "#EEE";
+            break;
+          }
+        }
+        return c;
+        function getScore(d) {
+          // Get the current score or the average of the children's scores.
+          if (d.children === undefined) {
+            return d.score;
+          }
+          var score = 0;
+          d.children.forEach(function (c) {
+            score += getScore(c);
+          });
+          score = score / d.children.length;
+          return isNaN(score) ? -1 : score;
+        }
+      })
+      .append("svg:title")
+        .text(function(d) {
+          return d.src;
+        });
+
+    g.append("image")
+      .attr("width", function (d) {
+        return (d.width = getWidth(d.svg));
+      })
+      .attr("height", function(d) {
+        return (d.height = getHeight(d.svg));
+      })
+      .attr("transform", transformImage)
+      .style("opacity", function(d) {
+        return d.dx * ky > d.height ? 1 : 0;
+      })
+      .attr("xlink:href", function (d) {
+        return "data:image/svg+xml;utf8," + d.svg;
+      })
+      .append("svg:title")
+        .text(function(d) {
+          return d.src;
+        });
+
+    g.append("svg:text")
+      .attr("transform", transform)
+      .attr("dy", ".35em")
+      .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; })
+      .text(function(d) {
+        if (getWidth(d.svg)) {
+          return "";
+        }
+        return escapeStr(d.name);
+      })
+      .append("svg:title")
+        .text(function(d) {
+          return d.src;
+        });
+
+    d3.select(window)
+      .on("click", function() { click(root); })
+
+    function click(d) {
+      if (!d.children) {
+//        window.history.pushState("object or string", "title", "/item?id=" + d.item);
+        window.location.href = "/item?id=" + d.item;
+        return;
+      }
+
+      var t = countLeaves(d) * 20;
+      h = t > 600 ? t : 600;
+      y = d3.scale.linear().range([0, h]);
+      ky = h / 1;
+
+      d3.select(el)
+        .attr("height", h)
+
+      kx = (d.y ? w - 40 : w) / (1 - d.y);
+      ky = h / d.dx;
+      x.domain([d.y, 1]).range([d.y ? 40 : 0, w]);
+      y.domain([d.x, d.x + d.dx]);
+
+      var t = g.transition()
+        .duration(d3.event.altKey ? 7500 : 750)
+        .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; });
+
+      t.select("rect")
+        .attr("width", d.dy * kx)
+        .attr("height", function(d) { return d.dx * ky; });
+
+      t.select("text")
+        .attr("transform", transform)
+        .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; });
+
+      t.select("image")
+        .attr("transform", transformImage)
+        .style("opacity", function(d) {
+          return d.dx * ky > d.height ? 1 : 0;
+        });
+
+      d3.event.stopPropagation();
+    }
+
+    function transform(d) {
+      return "translate(8," + d.dx * ky / 2 + ")";
+    }
+
+    function transformImage(d) {
+      return "translate(8," + (d.dx * ky / 2 - d.height / 2) + ")";
+    }
+  }
 })();
+

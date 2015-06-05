@@ -24,10 +24,16 @@ app.get('/compile', function(req, res) {
   });
   req.on('end', function () {
     var src = JSON.parse(data).src;
-    var obj = compiler.compile(src, done);
-    function done(data) {
-      res.send(data);
-    }
+    var obj = compiler.compile(src, function (err, val) {
+      console.log("L109 /compile val=" + JSON.stringify(val));
+      if (err) {
+        res.send({
+          error: err
+        });
+      } else {
+        res.send(val);
+      }
+    });
   });
   req.on('error', function(e) {
     console.log(e);

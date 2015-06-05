@@ -7,7 +7,7 @@ exports.wordMap = {
     ]
 }
 
-exports.lexiconType = "draw";
+exports.lexiconType = "L100";
 exports.globalLexicon = {
     "let" : { "tk": 0x12, "cls": "keyword" },
     "if" : { "tk": 0x05, "cls": "keyword" },
