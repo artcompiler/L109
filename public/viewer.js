@@ -58,7 +58,6 @@ window.exports.viewer = (function () {
     var data = [];
     var children = [];
     var names = {};
-    obj = stripNewlines(obj);
     obj = JSON.parse(obj);
     Object.keys(obj).forEach(function (name) {
       var val = obj[name];
@@ -78,6 +77,7 @@ window.exports.viewer = (function () {
         }
         var objStr = escapeStr(unescapeXML(objectCode));
         console.log(objStr);
+        objectStr = stripNewlines(objectStr);
         var objObj = JSON.parse(objStr);
         var valueSVG = objObj.valueSVG;
         var responseSVG = objObj.responseSVG;
