@@ -65,7 +65,10 @@ window.exports.viewer = (function () {
       var value = srcObj.arg2 ? srcObj.arg1 : null;
       var response = srcObj.arg2 ? srcObj.arg2 : srcObj.arg1;
       try {
-        var objectCode = val.objectCode ? val.objectCode : val.obj;
+        var objectCode = val.obj;
+        if (!objectCode) {
+          return;
+        }
         var objStr = escapeStr(unescapeXML(objectCode));
         console.log(objStr);
         var objObj = JSON.parse(objStr);
