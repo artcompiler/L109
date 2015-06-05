@@ -45,6 +45,11 @@ window.exports.viewer = (function () {
       .replace(/}/g, "\}")
   }
 
+  function stripNewlines(str) {
+    return String(str)
+      .replace(/\n/g, " ")
+  }
+
   var SIZE = 100;
   var RECT = "<svg xmlns='http://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
 
@@ -53,6 +58,7 @@ window.exports.viewer = (function () {
     var data = [];
     var children = [];
     var names = {};
+    obj = JSON.parse(stripNewlines(obj));
     Object.keys(obj).forEach(function (name) {
       var val = obj[name];
       if (val.label !== "show") {
