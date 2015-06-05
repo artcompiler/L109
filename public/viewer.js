@@ -58,7 +58,8 @@ window.exports.viewer = (function () {
     var data = [];
     var children = [];
     var names = {};
-    obj = JSON.parse(stripNewlines(obj));
+    obj = stripNewlines(obj);
+    obj = JSON.parse(obj);
     Object.keys(obj).forEach(function (name) {
       var val = obj[name];
       if (val.label !== "show") {
