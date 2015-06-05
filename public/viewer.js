@@ -1,7 +1,7 @@
 /* -*- Mode: js; js-indent-level: 2; indent-tabs-mode: nil; tab-width: 2 -*- */
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 /* copyright (c) 2014, Jeff Dyer */
-window.viewer = (function () {
+window.exports.viewer = (function () {
   var height;
   function clickThumbnail(e, id) {
     showWorkspace();
