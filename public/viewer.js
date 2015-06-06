@@ -442,6 +442,7 @@ window.exports.viewer = (function () {
         if (getWidth(d.svg)) {
           return "";
         }
+//        return escapeStr(d.name);
         return escapeStr(d.name);
       })
       .append("svg:title")
