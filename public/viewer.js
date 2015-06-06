@@ -443,7 +443,7 @@ window.exports.viewer = (function () {
           return "";
         }
 //        return escapeStr(d.name);
-        return escapeStr(d.name);
+        return d.name;
       })
       .append("svg:title")
         .text(function(d) {
