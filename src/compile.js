@@ -274,9 +274,7 @@ var transformer = function() {
   
   function data(node, cc) {
     var str = ""+visit(node.elts[0]);
-    console.log("data() str=" + str);
     get("/pieces/L106?q=" + str, null, function (data) {
-      console.log("data() data=" + JSON.stringify(data, null, 2));
       var list = [];
       for (var i = 0; i < data.length; i++) {
         list[i] = data[i].id        
@@ -398,7 +396,6 @@ exports.compiler = function () {
   function compile(src, next) {
     transformer.transform(src, function (data) {
       renderer.render(data, function (data) {
-        console.log("compile() render data=" + JSON.stringify(data, null, 2));
         next(null, data);
       });
     });
