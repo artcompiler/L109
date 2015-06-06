@@ -25,7 +25,6 @@ app.get('/compile', function(req, res) {
   req.on('end', function () {
     var src = JSON.parse(data).src;
     var obj = compiler.compile(src, function (err, val) {
-      console.log("L109 /compile val=" + JSON.stringify(val));
       if (err) {
         res.send({
           error: err
@@ -36,7 +35,7 @@ app.get('/compile', function(req, res) {
     });
   });
   req.on('error', function(e) {
-    console.log(e);
+    console.log("ERROR: " + e);
     res.send(e);
   });
 });
