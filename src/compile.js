@@ -394,6 +394,7 @@ var renderer = function() {
 exports.compiler = function () {
   exports.compile = compile;
   function compile(src, next) {
+    src = JSON.parse(src);
     transformer.transform(src, function (data) {
       renderer.render(data, function (data) {
         next(null, data);
