@@ -54,6 +54,7 @@ window.exports.viewer = (function () {
   var RECT = "<svg xmlns='http://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
 
   function update(el, obj, src, pool) {
+    obj = JSON.parse(obj);
     var c, i = 0;
     var data = [];
     var children = [];
