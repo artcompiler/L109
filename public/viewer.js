@@ -47,7 +47,7 @@ window.exports.viewer = (function () {
 
   function stripNewlines(str) {
     return String(str)
-      .replace(/\\n/g, " ")
+      .replace(/\n/g, " ")
   }
 
   var SIZE = 100;
@@ -77,7 +77,7 @@ window.exports.viewer = (function () {
         }
         var objStr = escapeStr(unescapeXML(objectCode));
         console.log(objStr);
-        objectStr = stripNewlines(objectStr);
+        objStr = stripNewlines(objStr);
         var objObj = JSON.parse(objStr);
         var valueSVG = objObj.valueSVG;
         var responseSVG = objObj.responseSVG;
