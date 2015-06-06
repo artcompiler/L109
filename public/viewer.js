@@ -40,7 +40,7 @@ window.exports.viewer = (function () {
 
   function escapeStr(str) {
     return String(str)
-      .replace(/\\/g, "\\\\")
+//      .replace(/\\/g, "\\\\")
       .replace(/{/g, "\{")
       .replace(/}/g, "\}")
   }
@@ -454,7 +454,6 @@ window.exports.viewer = (function () {
 
     function click(d) {
       if (!d.children) {
-//        window.history.pushState("object or string", "title", "/item?id=" + d.item);
         window.location.href = "/item?id=" + d.item;
         return;
       }
