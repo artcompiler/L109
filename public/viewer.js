@@ -40,7 +40,7 @@ window.exports.viewer = (function () {
 
   function escapeStr(str) {
     return String(str)
-//      .replace(/\\/g, "\\\\")
+      .replace(/\\/g, "\\\\")
       .replace(/{/g, "\{")
       .replace(/}/g, "\}")
   }
