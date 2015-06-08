@@ -412,7 +412,11 @@ window.exports.viewer = (function () {
       })
       .append("svg:title")
         .text(function(d) {
-          return "[/item?id=" + d.item + "]\n" + d.src;
+          if (!d.children) {
+            return "[/item?id=" + d.item + "]\n" + d.src;
+          } else {
+            return "";
+          }
         });
 
     g.append("image")
@@ -431,7 +435,11 @@ window.exports.viewer = (function () {
       })
       .append("svg:title")
         .text(function(d) {
-          return "[/item?id=" + d.item + "]\n" + d.src;
+          if (!d.children) {
+            return "[/item?id=" + d.item + "]\n" + d.src;
+          } else {
+            return "";
+          }
         });
 
     g.append("svg:text")
@@ -446,7 +454,11 @@ window.exports.viewer = (function () {
       })
       .append("svg:title")
         .text(function(d) {
-          return "[/item?id=" + d.item + "]\n" + d.src;
+          if (!d.children) {
+            return "[/item?id=" + d.item + "]\n" + d.src;
+          } else {
+            return "";
+          }
         });
 
     d3.select(window)
