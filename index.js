@@ -43,3 +43,7 @@ app.get('/compile', function(req, res) {
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
 });
+
+process.on('uncaughtException', function(err) {
+  console.log('Caught exception: ' + err.stack);
+});
