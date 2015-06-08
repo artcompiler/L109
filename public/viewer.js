@@ -412,7 +412,7 @@ window.exports.viewer = (function () {
       })
       .append("svg:title")
         .text(function(d) {
-          return d.src;
+          return "[/item?id=" + d.item + "]\n" + d.src;
         });
 
     g.append("image")
