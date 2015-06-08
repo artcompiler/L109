@@ -249,9 +249,9 @@ var transformer = function() {
 
   function get(path, data, cc) {
     if (data) {
-      path += "?" + querystring.stringify(data).trim();
+      path += "?" + querystring.stringify(data);
     }
-    console.log("get() path=|" + path + "|");
+    path = path.trim().replace(/ /g, "+");
     var options = {
       method: "GET",
       host: "www.graffiticode.org",
