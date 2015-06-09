@@ -402,7 +402,7 @@ window.exports.viewer = (function () {
         scaleItems();
 
         // Draw the menu
-        d3.select(el)
+        d3.select("svg")
           .append('g').attr('class', 'context-menu')
           .selectAll('tmp')
           .data(items).enter()
