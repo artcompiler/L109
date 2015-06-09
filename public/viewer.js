@@ -471,22 +471,8 @@ window.exports.viewer = (function () {
       return menu;
     }
 
-//    d3.select('body').append('svg').attr('id', 'svg-main')
-//      .attr('width', mainw)
-//      .attr('height', mainh);
-    
     var menu = contextMenu().items('first item', 'second option', 'whatever, man');
     
-    d3.select('svg').append('rect')
-      .attr('x', mainw/2 - 30)
-      .attr('y', mainh/2 - 30)
-      .attr('width', 60)
-      .attr('height', 60)
-      .on('contextmenu', function(){ 
-        d3.event.preventDefault();
-        menu(d3.mouse(this)[0], d3.mouse(this)[1]);
-      });
-
     g.append("svg:rect")
       .attr("width", root.dy * kx)
       .attr("height", function(d) { return d.dx * ky; })
