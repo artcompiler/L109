@@ -369,7 +369,11 @@ window.exports.viewer = (function () {
       .enter().append("svg:g")
       .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
       .attr("class", function(d) {
-        return d.item;
+        if (d.item) {
+          return "item" + d.item;
+        } else {
+          return "parent";
+        }
       })
       .on("click", click);
 
