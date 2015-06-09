@@ -440,7 +440,7 @@ window.exports.viewer = (function () {
         // Other interactions
         d3.select('body')
           .on('click', function(e) {
-            console.log("click " + e);
+            d3.event.stopPropagation();
             d3.select('.context-menu').remove();
           });
       }
