@@ -374,30 +374,118 @@ window.exports.viewer = (function () {
     var kx = w / root.dx,
     ky = h / 1;
 
-    var context = null;
-    var contextMenu = function(that, newContext) {
-      if (context) {
-        if (context !== newContext) {
-//          console.log('contextmenu: cannot execute for context: ' + newContext + ' while in current context: ' + context);
-//          return;
+    function contextMenu() {
+      var height,
+          width, 
+          margin = 0.1, // fraction of width
+          items = [], 
+          rescale = false, 
+          style = {
+            'rect': {
+                'mouseout': {
+                    'fill': 'rgb(244,244,244)', 
+                    'stroke': 'white', 
+                    'stroke-width': '1px'
+                }, 
+                'mouseover': {
+                    'fill': 'rgb(200,200,200)'
+                }
+            }, 
+            'text': {
+                'fill': 'steelblue', 
+                'font-size': '13'
+            }
+          }; 
+    
+      function menu(el, x, y) {
+        d3.select('.context-menu').remove();
+        scaleItems();
+
+        // Draw the menu
+        d3.select(el)
+          .append('g').attr('class', 'context-menu')
+          .selectAll('tmp')
+          .data(items).enter()
+          .append('g').attr('class', 'menu-entry')
+          .style({'cursor': 'pointer'})
+          .on('mouseover', function(){ 
+            d3.select(this).select('rect').style(style.rect.mouseover) })
+          .on('mouseout', function(){ 
+            d3.select(this).select('rect').style(style.rect.mouseout) });
+        
+        d3.selectAll('.menu-entry')
+          .append('rect')
+          .attr('x', x)
+          .attr('y', function(d, i){ return y + (i * height); })
+          .attr('width', width)
+          .attr('height', height)
+          .style(style.rect.mouseout);
+        
+        d3.selectAll('.menu-entry')
+          .append('text')
+          .text(function(d){ return d; })
+          .attr('x', x)
+          .attr('y', function(d, i){ return y + (i * height); })
+          .attr('dy', height - margin / 2)
+          .attr('dx', margin)
+          .style(style.text);
+
+        // Other interactions
+        d3.select('body')
+          .on('click', function() {
+            d3.select('.context-menu').remove();
+          });
+      }
+    
+      menu.items = function(e) {
+        if (!arguments.length) return items;
+        for (i in arguments) items.push(arguments[i]);
+        rescale = true;
+        return menu;
+      }
+
+      // Automatically set width, height, and margin;
+      function scaleItems() {
+        if (rescale) {
+          d3.select('svg').selectAll('tmp')
+            .data(items).enter()
+            .append('text')
+            .text(function(d){ return d; })
+            .style(style.text)
+            .attr('x', -1000)
+            .attr('y', -1000)
+            .attr('class', 'tmp');
+          var z = d3.selectAll('.tmp')[0]
+            .map(function(x){ return x.getBBox(); });
+          width = d3.max(z.map(function(x){ return x.width; }));
+          margin = margin * width;
+          width =  width + 2 * margin;
+          height = d3.max(z.map(function(x){ return x.height + margin / 2; }));
+          
+          // cleanup
+          d3.selectAll('.tmp').remove();
+          rescale = false;
         }
       }
-      context = newContext;
-      console.log('contextmenu:' + context);
-      d3.event.preventDefault();
-      
-      var position = d3.mouse(that);
-      d3.select('#context-menu')
-        .style('position', 'relative')
-        .style('left', position[0] + "px")
-        .style('top', position[1] + "px")
-        .style('display', 'inline-block')
-        .on('mouseleave', function() {
-          d3.select('#context-menu').style('display', 'none');
-          context = null;
-        });
-      d3.select('#context-menu').attr('class', 'menu ' + context);
+
+      return menu;
     }
+
+//    d3.select('body').append('svg').attr('id', 'svg-main')
+//      .attr('width', mainw)
+//      .attr('height', mainh);
+    
+    var menu = contextMenu().items('first item', 'second option', 'whatever, man');
+    
+    d3.select('svg').append('rect')
+      .attr('x', mainw/2 - 30)
+      .attr('y', mainh/2 - 30)
+      .attr('width', 60)
+      .attr('height', 60)
+      .on('contextmenu', function(){ 
+        d3.event.preventDefault();
+        menu(d3.mouse(this)[0], d3.mouse(this)[1]);
+      });
 
     g.append("svg:rect")
       .attr("width", root.dy * kx)
@@ -435,9 +523,9 @@ window.exports.viewer = (function () {
           return isNaN(score) ? -1 : score;
         }
       })
-      .on("contextmenu", function(data, index) {
-        contextMenu(this, 'rect', data, index);
+      .on('contextmenu', function(data) { 
         d3.event.preventDefault();
+        menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
       })
       .append("svg:title")
         .text(function(d) {
@@ -447,7 +535,6 @@ window.exports.viewer = (function () {
             return "";
           }
         })
-
 
     g.append("image")
       .attr("width", function (d) {
@@ -463,9 +550,9 @@ window.exports.viewer = (function () {
       .attr("xlink:href", function (d) {
         return "data:image/svg+xml;utf8," + d.svg;
       })
-      .on("contextmenu", function(data, index) {
-        contextMenu(this, 'image', data, index);
+      .on('contextmenu', function(data) { 
         d3.event.preventDefault();
+        menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
       })
       .append("svg:title")
         .text(function(d) {
@@ -476,7 +563,6 @@ window.exports.viewer = (function () {
           }
         })
  
-
     g.append("svg:text")
       .attr("transform", transform)
       .attr("dy", ".35em")
@@ -487,9 +573,9 @@ window.exports.viewer = (function () {
         }
         return d.name;
       })
-      .on("contextmenu", function(data, index) {
-        contextMenu(this, 'text', data, index);
+      .on('contextmenu', function(data){ 
         d3.event.preventDefault();
+        menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
       })
       .append("svg:title")
         .text(function(d) {
