@@ -423,7 +423,7 @@ window.exports.viewer = (function () {
         d3.selectAll('.menu-entry')
           .append('rect')
           .attr('x', x)
-          .attr('y', function(d, i){ return y + (i * height); })
+          .attr('y', function(d, i){ return y - height / 2 + (i * height); })
           .attr('width', width)
           .attr('height', height)
           .style(style.rect.mouseout);
