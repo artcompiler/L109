@@ -409,7 +409,7 @@ window.exports.viewer = (function () {
         scaleItems();
 
         // Draw the menu
-        d3.select("g.item" + data.item)
+        d3.select(".item" + data.item)
           .append('g').attr('class', 'context-menu')
           .selectAll('tmp')
           .data(items).enter()
