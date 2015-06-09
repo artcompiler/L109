@@ -378,8 +378,8 @@ window.exports.viewer = (function () {
     var contextMenu = function(that, newContext) {
       if (context) {
         if (context !== newContext) {
-          console.log('contextmenu: cannot execute for context: ' + newContext + ' while in current context: ' + context);
-          return;
+//          console.log('contextmenu: cannot execute for context: ' + newContext + ' while in current context: ' + context);
+//          return;
         }
       }
       context = newContext;
