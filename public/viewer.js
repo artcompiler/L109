@@ -455,7 +455,7 @@ window.exports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "[/item?id=" + d.item + "]\n" + d.src;
+            return "[/item?id=" + d.item + "]\n---------------\n" + d.src;
           } else {
             return "";
           }
