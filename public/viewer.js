@@ -397,12 +397,12 @@ window.exports.viewer = (function () {
             }
           }; 
     
-      function menu(el, x, y) {
+      function menu(data, x, y) {
         d3.select('.context-menu').remove();
         scaleItems();
 
         // Draw the menu
-        d3.select(el.parentNode)
+        d3.select(".item" + data.item)
           .append('g').attr('class', 'context-menu')
           .selectAll('tmp')
           .data(items).enter()
