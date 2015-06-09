@@ -478,9 +478,12 @@ window.exports.viewer = (function () {
         d3.event.preventDefault();
         menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
       })
+      .attr("id", function (d) { return "item" + d.item };
       .attr("width", root.dy * kx)
       .attr("height", function(d) { return d.dx * ky; })
-      .attr("class", function(d) { return d.children ? "parent" : "child"; })
+      .attr("class", function(d) {
+        return (d.children ? "parent" : "child") + " item" + d.item;
+      })
 	    .style("fill", function(d) {
         var strokeColor;
         if (d.name ===  "root") {
@@ -527,6 +530,9 @@ window.exports.viewer = (function () {
         d3.event.preventDefault();
         menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
       })
+      .attr("class", function(d) {
+        return "item" + d.item;
+      })
       .attr("width", function (d) {
         return (d.width = getWidth(d.svg));
       })
@@ -553,6 +559,9 @@ window.exports.viewer = (function () {
       .on('contextmenu', function(data){ 
         d3.event.preventDefault();
         menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+      })
+      .attr("class", function(d) {
+        return "item" + d.item;
       })
       .attr("transform", transform)
       .attr("dy", ".35em")
