@@ -139,8 +139,11 @@ img, image {
   display: none;
 }
 
-.menu.text li.item,
-.menu.text li.item li {
+.menu.text li.text ,
+.menu.text li.text li,
+.menu.rect li.rect,
+.menu.image li.image li,
+.menu.image li.image {
   display: block;
 }
 /* Support sub menu */
