@@ -388,7 +388,7 @@ window.exports.viewer = (function () {
       
       var position = d3.mouse(that);
       d3.select('#context-menu')
-        .style('position', 'absolute')
+        .style('position', 'relative')
         .style('left', position[0] + "px")
         .style('top', position[1] + "px")
         .style('display', 'inline-block')
