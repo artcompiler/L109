@@ -435,6 +435,10 @@ window.exports.viewer = (function () {
           return isNaN(score) ? -1 : score;
         }
       })
+      .on("contextmenu", function(data, index) {
+        contextMenu(this, 'item', data, index);
+        d3.event.preventDefault();
+      })
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
@@ -443,10 +447,6 @@ window.exports.viewer = (function () {
             return "";
           }
         })
-      .on("contextmenu", function(data, index) {
-        contextMenu(this, 'item', data, index);
-        d3.event.preventDefault();
-      });
 
 
     g.append("image")
@@ -463,6 +463,10 @@ window.exports.viewer = (function () {
       .attr("xlink:href", function (d) {
         return "data:image/svg+xml;utf8," + d.svg;
       })
+      .on("contextmenu", function(data, index) {
+        contextMenu(this, 'item', data, index);
+        d3.event.preventDefault();
+      })
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
@@ -471,11 +475,7 @@ window.exports.viewer = (function () {
             return "";
           }
         })
-      .on("contextmenu", function(data, index) {
-        contextMenu(this, 'item', data, index);
-        d3.event.preventDefault();
-      });
-
+ 
 
     g.append("svg:text")
       .attr("transform", transform)
@@ -487,6 +487,10 @@ window.exports.viewer = (function () {
         }
         return d.name;
       })
+      .on("contextmenu", function(data, index) {
+        contextMenu(this, 'item', data, index);
+        d3.event.preventDefault();
+      })
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
@@ -495,10 +499,6 @@ window.exports.viewer = (function () {
             return "";
           }
         })
-      .on("contextmenu", function(data, index) {
-        contextMenu(this, 'item', data, index);
-        d3.event.preventDefault();
-      });
 
 
     d3.select(window)
