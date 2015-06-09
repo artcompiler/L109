@@ -374,6 +374,31 @@ window.exports.viewer = (function () {
     var kx = w / root.dx,
     ky = h / 1;
 
+    var context = null;
+    var contextMenu = function(that, newContext) {
+      if (context) {
+        if (context !== newContext) {
+          console.log('contextmenu: cannot execute for context: ' + newContext + ' while in current context: ' + context);
+          return;
+        }
+      }
+      context = newContext;
+      console.log('contextmenu:' + context);
+      d3.event.preventDefault();
+      
+      var position = d3.mouse(that);
+      d3.select('#context-menu')
+        .style('position', 'absolute')
+        .style('left', position[0] + "px")
+        .style('top', position[1] + "px")
+        .style('display', 'inline-block')
+        .on('mouseleave', function() {
+          d3.select('#context-menu').style('display', 'none');
+          context = null;
+        });
+      d3.select('#context-menu').attr('class', 'menu ' + context);
+    }
+
     g.append("svg:rect")
       .attr("width", root.dy * kx)
       .attr("height", function(d) { return d.dx * ky; })
@@ -417,7 +442,12 @@ window.exports.viewer = (function () {
           } else {
             return "";
           }
-        });
+        })
+      .on("contextmenu", function(data, index) {
+        contextMenu(this, 'item', data, index, rects);
+        d3.event.preventDefault();
+      });
+
 
     g.append("image")
       .attr("width", function (d) {
@@ -440,7 +470,12 @@ window.exports.viewer = (function () {
           } else {
             return "";
           }
-        });
+        })
+      .on("contextmenu", function(data, index) {
+        contextMenu(this, 'item', data, index, rects);
+        d3.event.preventDefault();
+      });
+
 
     g.append("svg:text")
       .attr("transform", transform)
@@ -459,7 +494,12 @@ window.exports.viewer = (function () {
           } else {
             return "";
           }
-        });
+        })
+      .on("contextmenu", function(data, index) {
+        contextMenu(this, 'item', data, index, rects);
+        d3.event.preventDefault();
+      });
+
 
     d3.select(window)
       .on("click", function() { click(root); })
