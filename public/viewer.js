@@ -29,7 +29,7 @@ window.exports.viewer = (function () {
   }
 
   function hideItem(id) {
-    $(".gallery-panel #" + id).hide();
+    $(".item" + id).hide();
   }
 
   function stripHTML(src) {
@@ -439,7 +439,8 @@ window.exports.viewer = (function () {
 
         // Other interactions
         d3.select('body')
-          .on('click', function() {
+          .on('click', function(e) {
+            console.log("click " + e);
             d3.select('.context-menu').remove();
           });
       }
@@ -525,7 +526,7 @@ window.exports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + d.item + "\n\n" + d.src;
+            return "/item?id=" + d.item + "\n" + d.src;
           } else {
             return "";
           }
@@ -552,7 +553,7 @@ window.exports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + d.item + "\n\n" + d.src;
+            return "/item?id=" + d.item + "\n" + d.src;
           } else {
             return "";
           }
@@ -575,7 +576,7 @@ window.exports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + d.item + "\n\n" + d.src;
+            return "/item?id=" + d.item + "\n" + d.src;
           } else {
             return "";
           }
