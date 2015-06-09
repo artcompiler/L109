@@ -444,7 +444,7 @@ window.exports.viewer = (function () {
           }
         })
       .on("contextmenu", function(data, index) {
-        contextMenu(this, 'item', data, index, rects);
+        contextMenu(this, 'item', data, index);
         d3.event.preventDefault();
       });
 
@@ -472,7 +472,7 @@ window.exports.viewer = (function () {
           }
         })
       .on("contextmenu", function(data, index) {
-        contextMenu(this, 'item', data, index, rects);
+        contextMenu(this, 'item', data, index);
         d3.event.preventDefault();
       });
 
@@ -496,7 +496,7 @@ window.exports.viewer = (function () {
           }
         })
       .on("contextmenu", function(data, index) {
-        contextMenu(this, 'item', data, index, rects);
+        contextMenu(this, 'item', data, index);
         d3.event.preventDefault();
       });
 
