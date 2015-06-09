@@ -432,7 +432,7 @@ window.exports.viewer = (function () {
           .append('text')
           .text(function(d){ return d; })
           .attr('x', x)
-          .attr('y', function(d, i){ return y + (i * height); })
+          .attr('y', function(d, i){ return y - height / 2 + (i * height); })
           .attr('dy', height - margin / 2)
           .attr('dx', margin)
           .style(style.text);
@@ -478,7 +478,7 @@ window.exports.viewer = (function () {
       return menu;
     }
 
-    var menu = contextMenu().items('first item', 'second option', 'whatever, man');
+    var menu = contextMenu().items('Hide');
     
     g.append("svg:rect")
       .on('contextmenu', function(data) { 
