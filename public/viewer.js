@@ -478,7 +478,7 @@ window.exports.viewer = (function () {
         d3.event.preventDefault();
         menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
       })
-      .attr("id", function (d) { return "item" + d.item };
+      .attr("id", function (d) { return "item" + d.item })
       .attr("width", root.dy * kx)
       .attr("height", function(d) { return d.dx * ky; })
       .attr("class", function(d) {
