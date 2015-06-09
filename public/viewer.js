@@ -466,7 +466,7 @@ window.exports.viewer = (function () {
 
     function click(d) {
       if (!d.children) {
-        window.open("/item?id=" + d.item);
+        window.open("/item?id=" + d.item, "L106");
         return;
       }
 
