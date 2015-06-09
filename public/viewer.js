@@ -436,7 +436,7 @@ window.exports.viewer = (function () {
         }
       })
       .on("contextmenu", function(data, index) {
-        contextMenu(this, 'rect', data, index);
+        contextMenu(this, 'item', data, index);
         d3.event.preventDefault();
       })
       .append("svg:title")
@@ -464,7 +464,7 @@ window.exports.viewer = (function () {
         return "data:image/svg+xml;utf8," + d.svg;
       })
       .on("contextmenu", function(data, index) {
-        contextMenu(this, 'image', data, index);
+        contextMenu(this, 'item', data, index);
         d3.event.preventDefault();
       })
       .append("svg:title")
@@ -488,7 +488,7 @@ window.exports.viewer = (function () {
         return d.name;
       })
       .on("contextmenu", function(data, index) {
-        contextMenu(this, 'text', data, index);
+        contextMenu(this, 'item', data, index);
         d3.event.preventDefault();
       })
       .append("svg:title")
