@@ -434,8 +434,8 @@ window.exports.viewer = (function () {
           .style(style.text);
 
         // Other interactions
-        d3.select('body')
-          .on('click', function () { click(data) });
+//        d3.select('body')
+//          .on('click', function () { click(data) });
 
         contextMenuShowing = true;
       }
