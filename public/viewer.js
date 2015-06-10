@@ -375,8 +375,7 @@ window.exports.viewer = (function () {
           return "parent";
         }
       })
-      .on("click", click);
-
+      .on("click", function() { click(root); })
     
     var kx = w / root.dx,
     ky = h / 1;
@@ -439,11 +438,9 @@ window.exports.viewer = (function () {
 
         // Other interactions
         d3.select('body')
-          .on('click', function() {
-            d3.event.preventDefault();
-            d3.event.stopPropogation();
-            d3.select('.context-menu').remove();
-          });
+          .on('click', function () { click(data) });
+
+        contextMenuShowing = true;
       }
     
       menu.items = function(e) {
@@ -588,6 +585,15 @@ window.exports.viewer = (function () {
       .on("click", function() { click(root); })
 
     function click(d) {
+
+      if (contextMenuShowing) {
+        d3.event.preventDefault();
+        d3.event.stopPropogation();
+        d3.select('.context-menu').remove();
+        contextMenuShowing = !contextMenuShowing;
+        return;
+      }
+
       if (!d.children) {
         window.open("/item?id=" + d.item, "L106");
         return;
