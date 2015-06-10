@@ -370,7 +370,7 @@ window.exports.viewer = (function () {
       .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
       .attr("class", function(d) {
         if (d.item) {
-          return "item" + d.item;
+          return d.item;
         } else {
           return "parent";
         }
@@ -590,6 +590,7 @@ window.exports.viewer = (function () {
       if (contextMenuShowing) {
         d3.event.preventDefault();
         d3.event.stopPropagation();
+        var item = d3.event.currentTarget.className;
         d3.select('.context-menu').remove();
         contextMenuShowing = false;
         return;
