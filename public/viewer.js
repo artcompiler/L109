@@ -595,7 +595,7 @@ window.exports.viewer = (function () {
         return;
       }
 
-      if (!d.children) {
+      if (!d.children && d.item) {
         window.open("/item?id=" + d.item, "L106");
         return;
       }
