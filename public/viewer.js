@@ -410,6 +410,7 @@ window.exports.viewer = (function () {
         // Draw the menu
         d3.select(".item" + data.item)
           .append('g').attr('class', 'context-menu')
+          .attr("item", data.item)
           .selectAll('tmp')
           .data(items).enter()
           .append('g').attr('class', 'menu-entry')
