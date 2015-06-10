@@ -590,7 +590,7 @@ window.exports.viewer = (function () {
         d3.event.preventDefault();
         d3.event.stopPropagation();
         d3.select('.context-menu').remove();
-        contextMenuShowing = !contextMenuShowing;
+        contextMenuShowing = false;
         return;
       }
 
