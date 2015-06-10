@@ -3,6 +3,7 @@
 /* copyright (c) 2014, Jeff Dyer */
 window.exports.viewer = (function () {
   var height;
+  var contextMenuShowing = false;
   function clickThumbnail(e, id) {
     showWorkspace();
     $.get("http://"+location.host+"/code/"+id, function (data) {
@@ -410,7 +411,6 @@ window.exports.viewer = (function () {
         // Draw the menu
         d3.select(".item" + data.item)
           .append('g').attr('class', 'context-menu')
-          .attr("item", data.item)
           .selectAll('tmp')
           .data(items).enter()
           .append('g').attr('class', 'menu-entry')
@@ -584,6 +584,7 @@ window.exports.viewer = (function () {
 
     d3.select(window)
       .on("click", function() { click(root); })
+
 
     function click(d) {
 
