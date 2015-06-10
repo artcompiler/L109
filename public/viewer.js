@@ -376,7 +376,7 @@ window.exports.viewer = (function () {
           return "parent";
         }
       })
-      .on("click", function() { click(root); })
+      .on("click", click)
     
     var kx = w / root.dx,
     ky = h / 1;
