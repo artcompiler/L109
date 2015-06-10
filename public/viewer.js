@@ -439,8 +439,8 @@ window.exports.viewer = (function () {
 
         // Other interactions
         d3.select('body')
-          .on('click', function(e) {
-            d3.event.stopPropagation();
+          .on('click', function() {
+            d3.preventDefault();
             d3.select('.context-menu').remove();
           });
       }
