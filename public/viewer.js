@@ -11,7 +11,7 @@ window.exports.viewer = (function () {
     });
   }
 
-  function hideThumbnail(e, id) {
+  function hideItem(id) {
     $.ajax({
       type: "PUT",
       url: "/label",
@@ -21,16 +21,12 @@ window.exports.viewer = (function () {
       },
       dataType: "text",
       success: function(data) {
-        hideItem(id);
+        $(".item" + id).hide();
       },
       error: function(xhr, msg, err) {
         console.log(msg + " " + err);
       }
     });
-  }
-
-  function hideItem(id) {
-    $(".item" + id).hide();
   }
 
   function stripHTML(src) {
@@ -591,7 +587,9 @@ window.exports.viewer = (function () {
       if (contextMenuShowing) {
         d3.event.preventDefault();
         d3.event.stopPropagation();
-        var item = d3.event.currentTarget.className;
+        var item = d3.event.currentTarget.className.baseVal;
+        item = item.substring("item".length);
+        hideItem(item);
         d3.select('.context-menu').remove();
         contextMenuShowing = false;
         return;
