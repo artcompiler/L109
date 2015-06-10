@@ -21,7 +21,7 @@ window.exports.viewer = (function () {
       },
       dataType: "text",
       success: function(data) {
-        $(".item" + id).hide();
+        $(".item" + id).attr("opacity", "0.2");
       },
       error: function(xhr, msg, err) {
         console.log(msg + " " + err);
