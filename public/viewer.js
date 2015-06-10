@@ -588,7 +588,7 @@ window.exports.viewer = (function () {
 
       if (contextMenuShowing) {
         d3.event.preventDefault();
-        d3.event.stopPropogation();
+        d3.event.stopPropagation();
         d3.select('.context-menu').remove();
         contextMenuShowing = !contextMenuShowing;
         return;
