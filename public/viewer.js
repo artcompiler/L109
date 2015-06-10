@@ -371,7 +371,7 @@ window.exports.viewer = (function () {
       .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
       .attr("class", function(d) {
         if (d.item) {
-          return "item" + d.item;
+          return d.item;
         } else {
           return "parent";
         }
