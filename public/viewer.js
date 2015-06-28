@@ -77,7 +77,7 @@ window.exports.viewer = (function () {
 
   function update(el, obj, src, pool) {
     obj = JSON.parse(obj);
-    loadItems(obj, [], function (data) {
+    loadItems(obj, [], function (obj) {
       var c, i = 0;
       var data = [];
       var children = [];
