@@ -144,7 +144,7 @@ window.exports.viewer = (function () {
         }
       });
       render(el, {
-        name: src,
+        name: "[" + obj.length + "] " + src,
         parent: null,
         children: children,
         svg: RECT,
