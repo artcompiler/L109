@@ -49,7 +49,7 @@ window.exports.viewer = (function () {
 
   var SIZE = 100;
   var RECT = "<svg xmlns='http://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
-  var ITEM_COUNT = 2;
+  var ITEM_COUNT = 20;
 
   function loadItems(list, data, resume) {
     var sublist = list.slice(0, ITEM_COUNT);
