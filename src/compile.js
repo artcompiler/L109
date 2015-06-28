@@ -280,9 +280,13 @@ var transformer = function() {
       for (var i = 0; i < data.length; i++) {
         list[i] = data[i].id        
       }
+      cc(list);
+/*
+      // Okay, we have a list of matching item ids. Now get the actual items.
       get("/code", {list: String(list)}, function (data) {
         cc(data);
       });
+*/
     });
   }
 

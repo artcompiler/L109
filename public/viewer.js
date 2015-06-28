@@ -49,79 +49,106 @@ window.exports.viewer = (function () {
 
   var SIZE = 100;
   var RECT = "<svg xmlns='http://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
+  var ITEM_COUNT = 2;
+
+  function loadItems(list, data, resume) {
+    var sublist = list.slice(0, ITEM_COUNT);
+    $.ajax({
+      type: "GET",
+      url: "/code",
+      data : {list: sublist},
+      dataType: "json",
+      success: function(dd) {
+        for (var i = 0; i < dd.length; i++) {
+          data.push(dd[i]);
+        }
+        list = list.slice(ITEM_COUNT);
+        if (list.length > 0) {
+          loadItems(list, data, resume);
+        } else {
+          resume(data);
+        }
+      },
+      error: function(xhr, msg, err) {
+        console.log(msg+" "+err);
+      }
+    });
+  }
 
   function update(el, obj, src, pool) {
     obj = JSON.parse(obj);
-    var c, i = 0;
-    var data = [];
-    var children = [];
-    var names = {};
-    Object.keys(obj).forEach(function (name) {
-      var val = obj[name];
-      if (val.label !== "show") {
-        return;
-      }
-      var item = val.id;
-      var src = val.src;
-      var srcObj = parseSrc(src);
-      var method = srcObj.method;
-      var value = srcObj.arg2 ? srcObj.arg1 : null;
-      var response = srcObj.arg2 ? srcObj.arg2 : srcObj.arg1;
-      try {
-        var objectCode = val.obj;
-        if (!objectCode) {
+    loadItems(obj, [], function (data) {
+      var c, i = 0;
+      var data = [];
+      var children = [];
+      var names = {};
+      Object.keys(obj).forEach(function (name) {
+        var val = obj[name];
+        if (val.lang !== "L106" || val.label !== "show") {
           return;
         }
-        var objStr = escapeStr(unescapeXML(objectCode));
-        var objObj = JSON.parse(objStr);
-        var valueSVG = objObj.valueSVG;
-        var responseSVG = objObj.responseSVG;
-        var score = objObj.score;
-        var n;
-        if (!(n = names[response])) {
-          // Add a node to the pool.
-          names[response] = n = {
-            name: response,
-            svg: unescapeXML(responseSVG ? responseSVG : RECT),
-            parent: "root",
-            children: [],
-            names: {},
-            size: SIZE,
-          };
-          children.push(n);
+        var item = val.id;
+        var src = val.src;
+        var srcObj = parseSrc(src);
+        var method = srcObj.method;
+        var value = srcObj.arg2 ? srcObj.arg1 : null;
+        var response = srcObj.arg2 ? srcObj.arg2 : srcObj.arg1;
+        try {
+          var objectCode = val.obj;
+          if (!objectCode) {
+            return;
+          }
+          var objStr = escapeStr(unescapeXML(objectCode));
+          var objObj = JSON.parse(objStr);
+          var valueSVG = objObj.valueSVG;
+          var responseSVG = objObj.responseSVG;
+          var score = objObj.score;
+          var n;
+          if (!(n = names[response])) {
+            // Add a node to the pool.
+            names[response] = n = {
+              name: response,
+              svg: unescapeXML(responseSVG ? responseSVG : RECT),
+              parent: "root",
+              children: [],
+              names: {},
+              size: SIZE,
+            };
+            children.push(n);
+          }
+          if (value) {
+            var o = {
+            };
+            o[method] = {
+              name: value,
+              score: score,
+              size: SIZE,
+              svg: unescapeXML(valueSVG ? valueSVG : RECT),
+              src: src,
+              item: item,
+            };
+            n.children = n.children.concat(objToTree(o, response, n.names));
+          } else {
+            n.children = n.children.concat({
+              name: method,
+              parent: response,
+              score: score,
+              size: SIZE,
+              svg: RECT,
+              src: src,
+              item: item,
+            });
+          }
+          breadth++;
+        } catch (e) {
         }
-        if (value) {
-          var o = {
-          };
-          o[method] = {
-            name: value,
-            score: score,
-            size: SIZE,
-            svg: unescapeXML(valueSVG ? valueSVG : RECT),
-            src: src,
-            item: item,
-          };
-          n.children = n.children.concat(objToTree(o, response, n.names));
-        } else {
-          n.children = n.children.concat({
-            name: method,
-            parent: response,
-            score: score,
-            size: SIZE,
-            svg: RECT,
-            src: src,
-            item: item,
-          });
-        }
-        breadth++;
-      } catch (e) {
-      }
-    });
-    render(el, {
-      name: src,
-      parent: null,
-      children: children,
-      svg: RECT,
+      });
+      render(el, {
+        name: src,
+        parent: null,
+        children: children,
+        svg: RECT,
+      });
     });
   }
 
