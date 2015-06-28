@@ -84,7 +84,7 @@ window.exports.viewer = (function () {
       var names = {};
       Object.keys(obj).forEach(function (name) {
         var val = obj[name];
-        if (val.lang !== "L106" || val.label !== "show") {
+        if (val.language !== "L106" || val.label !== "show") {
           return;
         }
         var item = val.id;
