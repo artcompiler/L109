@@ -74,8 +74,78 @@ window.exports.viewer = (function () {
       }
     });
   }
+  
+  // {
+  //   name
+  //   child1
+  //   child2
+  //   child3
+  // }
 
-  function update(el, obj, src, pool) {
+  // {
+  //   name
+  //   children
+  //   size
+  // }
+
+  function getAlphaNumericPrefix(str) {
+    var code, i, len;
+    var result = "";
+    for (i = 0, len = str.length; i < len; i++) {
+      code = str.charCodeAt(i);
+      if (!(code > 47 && code < 58) && // numeric (0-9)
+          !(code > 64 && code < 91) && // upper alpha (A-Z)
+          !(code > 96 && code < 123)) { // lower alpha (a-z)
+        return result;
+      }
+      result += str.charAt(i);
+    }
+    return result;
+  }
+
+  function getRootName(str) {
+    // data "CCSS.Math.Content.8"
+    var start = str.indexOf("data");
+    str = str.substring(start + "data".length);
+    obj = str.split("\"");
+    return obj[1];
+  }
+
+  function getNodeFromPool(name, pool, parent) {
+    var node;
+    if (!(node = pool[name])) {
+      // Add a node to the pool.
+      node = pool[name] = {
+        name: name,
+        children: [],
+        names: {},
+      };
+      parent.push(node);
+    }
+    return node;
+  }
+
+  function parseItemName(rootName, str, pool, parent) {
+    // #CCSS.Math.Content.8.EE.C.7
+    // A pool is an hash table, aka object.
+    rootName = getRootName(rootName);
+    var start = str.indexOf(rootName);
+    str = str.substring(start);
+    var name = rootName;
+    var root = getNodeFromPool(name, pool, parent);
+    str = str.substring(rootName.length);
+    while (str.charAt(0) === ".") {
+      str = str.substring(1);
+      var part = getAlphaNumericPrefix(str);
+      name += "." + part;
+      var node  = getNodeFromPool(name, pool, root.children);
+      root = node;
+      str = str.substring(part.length);
+    }
+    return node;
+  }
+
+  function update(el, obj, source, pool) {
     obj = JSON.parse(obj);
     loadItems(obj, [], function (obj) {
       var c, i = 0;
@@ -89,10 +159,11 @@ window.exports.viewer = (function () {
         }
         var item = val.id;
         var src = val.src;
-        var srcObj = parseSrc(src);
+        var srcObj = parseSrc(val.src);
         var method = srcObj.method;
         var value = srcObj.arg2 ? srcObj.arg1 : null;
         var response = srcObj.arg2 ? srcObj.arg2 : srcObj.arg1;
+        var node = parseItemName(source, src, names, children);
         try {
           var objectCode = val.obj;
           if (!objectCode) {
@@ -114,7 +185,7 @@ window.exports.viewer = (function () {
               names: {},
               size: SIZE,
             };
-            children.push(n);
+            node.children.push(n);
           }
           if (value) {
             var o = {
@@ -144,7 +215,7 @@ window.exports.viewer = (function () {
         }
       });
       render(el, {
-        name: "[" + obj.length + "] " + src,
+        name: "[" + obj.length + "] " + source,
         parent: null,
         children: children,
         svg: RECT,
@@ -375,7 +446,7 @@ window.exports.viewer = (function () {
   function render(el, root) {
     d3.selectAll("g").remove();
     var w = 1400,
-        h = 600; //countLeaves(root) * 20,
+        h = 1000; //countLeaves(root) * 20,
         x = d3.scale.linear().range([0, w]),
         y = d3.scale.linear().range([0, h]);
 
@@ -628,7 +699,7 @@ window.exports.viewer = (function () {
       }
 
       var t = countLeaves(d) * 20;
-      h = 600; //t > 600 ? t : 600;
+      h = 1000; //t > 600 ? t : 600;
       y = d3.scale.linear().range([0, h]);
       ky = h / 1;
 
