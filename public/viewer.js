@@ -10,6 +10,19 @@ window.exports.viewer = (function () {
       updateSrc(data[0].id, data[0].src);
     });
   }
+  function getWindowSize() {
+    var width = window.innerWidth
+      || document.documentElement.clientWidth
+      || document.body.clientWidth;
+    
+    var height = window.innerHeight
+      || document.documentElement.clientHeight
+      || document.body.clientHeight;
+    return {
+      width: width,
+      height: height,
+    };
+  }
 
   function hideItem(id) {
     $.ajax({
@@ -216,12 +229,16 @@ window.exports.viewer = (function () {
         } catch (e) {
         }
       });
-      render(el, {
-        name: "[" + obj.length + "] " + source,
-        parent: null,
-        children: children,
-        svg: RECT,
-      });
+      if (children.length === 1) {
+        render(el, children[0]);
+      } else {
+        render(el, {
+          name: "[" + obj.length + "] " + source,
+          parent: null,
+          children: children,
+          svg: RECT,
+        });
+      }
     });
   }
 
@@ -447,8 +464,9 @@ window.exports.viewer = (function () {
 
   function render(el, root) {
     d3.selectAll("g").remove();
-    var w = 1400,
-        h = 1000; //countLeaves(root) * 20,
+    var size = getWindowSize(),
+        w = size.width,
+        h = size.height; //countLeaves(root) * 20,
         x = d3.scale.linear().range([0, w]),
         y = d3.scale.linear().range([0, h]);
 
@@ -701,7 +719,8 @@ window.exports.viewer = (function () {
       }
 
       var t = countLeaves(d) * 20;
-      h = 1000; //t > 600 ? t : 600;
+      var size = getWindowSize();
+      h = size.height; //t > 600 ? t : 600;
       y = d3.scale.linear().range([0, h]);
       ky = h / 1;
 
