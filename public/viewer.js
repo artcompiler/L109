@@ -375,7 +375,7 @@ window.exports.viewer = (function () {
   function render(el, root) {
     d3.selectAll("g").remove();
     var w = 1400,
-        h = countLeaves(root) * 20,
+        h = 600; //countLeaves(root) * 20,
         x = d3.scale.linear().range([0, w]),
         y = d3.scale.linear().range([0, h]);
 
@@ -628,7 +628,7 @@ window.exports.viewer = (function () {
       }
 
       var t = countLeaves(d) * 20;
-      h = t > 600 ? t : 600;
+      h = 600; //t > 600 ? t : 600;
       y = d3.scale.linear().range([0, h]);
       ky = h / 1;
 
