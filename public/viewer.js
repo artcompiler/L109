@@ -19,8 +19,8 @@ window.exports.viewer = (function () {
       || document.documentElement.clientHeight
       || document.body.clientHeight;
     return {
-      width: width,
-      height: height,
+      width: width - 20,
+      height: height - 100,
     };
   }
 
