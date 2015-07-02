@@ -147,14 +147,13 @@ window.exports.viewer = (function () {
     var start = str.indexOf(rootName);
     str = str.substring(start);
     var name = rootName;
-    var root = getNodeFromPool(name, pool, parent);
+    var node = getNodeFromPool(name, pool, parent);
     str = str.substring(rootName.length);
     while (str.charAt(0) === ".") {
       str = str.substring(1);
       var part = getAlphaNumericPrefix(str);
       name += "." + part;
-      var node  = getNodeFromPool(name, pool, root.children);
-      root = node;
+      node = getNodeFromPool(name, pool, root.children);
       str = str.substring(part.length);
     }
     return node;
