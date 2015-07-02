@@ -119,6 +119,8 @@ window.exports.viewer = (function () {
         name: name,
         children: [],
         names: {},
+        size: SIZE,
+        svg: RECT,
       };
       parent.push(node);
     }
