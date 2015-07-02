@@ -153,7 +153,7 @@ window.exports.viewer = (function () {
       str = str.substring(1);
       var part = getAlphaNumericPrefix(str);
       name += "." + part;
-      node = getNodeFromPool(name, pool, root.children);
+      node = getNodeFromPool(name, pool, node.children);
       str = str.substring(part.length);
     }
     return node;
