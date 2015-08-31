@@ -208,13 +208,11 @@ window.exports.viewer = (function () {
               name: value,
               score: score,
               size: SIZE,
-//              svg: unescapeXML(valueSVG ? valueSVG : RECT),
-              svg: unescapeXML(responseSVG ? responseSVG : RECT),
+              svg: unescapeXML(valueSVG ? valueSVG : RECT),
               src: src,
               item: item,
             };
-//            n.children = n.children.concat(objToTree(o, response, n.names));
-            n.children = n.children.concat(objToTree(o, value, n.names));
+            n.children = n.children.concat(objToTree(o, response, n.names));
           } else {
             n.children = n.children.concat({
               name: method,
