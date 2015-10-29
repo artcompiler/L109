@@ -48,29 +48,8 @@ exports.globalLexicon = {
 
     "print" : { "tk": 0x01, "cls": "function", "length": 1 },
 
-    "achievement" : { "tk": 0x01, "name": "ACHIEVEMENT", "cls": "function", "length": 1 },
     "data" : { "tk": 0x01, "name": "DATA", "cls": "function", "length": 1 },
-    "battlepet" : { "tk": 0x01, "name": "BATTLE-PET", "cls": "function", "length": 2 },
-    "challenge" : { "tk": 0x01, "name": "CHALLENGE", "cls": "function", "length": 1 },
-
-    "battlegroups" : { "tk": 0x01, "name": "battlegroups", "cls": "val", "length": 0},
-    "character" : { "tk": 0x01, "name": "character", "cls": "val", "length": 0},
-    "guild" : { "tk": 0x01, "name": "guild", "cls": "val", "length": 0},
-    "item" : { "tk": 0x01, "name": "item", "cls": "val", "length": 0},
-    "pet" : { "tk": 0x01, "name": "pet", "cls": "val", "length": 0},
-    "races" : { "tk": 0x01, "name": "races", "cls": "val", "length": 0},
-    "classes" : { "tk": 0x01, "name": "classes", "cls": "val", "length": 0},
-    "achievements" : { "tk": 0x01, "name": "achievements", "cls": "val", "length": 0},
-    "rewards" : { "tk": 0x01, "name": "rewards", "cls": "val", "length": 0},
-    "perks" : { "tk": 0x01, "name": "perks", "cls": "val", "length": 0},
-    "races" : { "tk": 0x01, "name": "races", "cls": "val", "length": 0},
-    "talents" : { "tk": 0x01, "name": "talents", "cls": "val", "length": 0},
-    "types" : { "tk": 0x01, "name": "types", "cls": "val", "length": 0},
-    "ability" : { "tk": 0x01, "name": "ability", "cls": "val", "length": 0},
-    "species" : { "tk": 0x01, "name": "species", "cls": "val", "length": 0},
-    "stats" : { "tk": 0x01, "name": "stats", "cls": "val", "length": 0},
-    "region" : { "tk": 0x01, "name": "region", "cls": "val", "length": 0},
-
+    "lang" : { "tk": 0x01, "name": "LANG", "cls": "function", "length": 1 },
 
     "plus" : { "tk": 0x01, "name": "PLUS", "cls": "function", "length": 2 },
     "minus" : { "tk": 0x01, "name": "MINUS", "cls": "function", "length": 2 },

@@ -6,6 +6,23 @@ var _ = require("underscore");
 var http = require('http');
 var querystring = require("querystring");
 
+function getGCHost() {
+  var port = global.port;
+  if (port === 5109) {
+    return "localhost";
+  } else {
+    return "www.graffiticode.com";
+  }
+}
+function getGCPort() {
+  var port = global.port;
+  if (port === 5109) {
+    return "3000";
+  } else {
+    return "80";
+  }
+}
+
 var transformer = function() {
 
   function print(str) {
@@ -29,6 +46,7 @@ var transformer = function() {
     "IDENT": ident,
 
     "DATA" : data,
+    "LANG" : lang,
 
     "MATH-RAND" : random,
     "RAND" : random,
@@ -70,7 +88,7 @@ var transformer = function() {
       return canvasColor;
     },
   };
-  
+
   // CONTROL FLOW ENDS HERE
 
   var nodePool
@@ -254,7 +272,8 @@ var transformer = function() {
     path = path.trim().replace(/ /g, "+");
     var options = {
       method: "GET",
-      host: "www.graffiticode.org",
+      host: getGCHost(),
+      port: getGCPort(),
       path: path,
     };
     var req = http.get(options, function(res) {
@@ -272,21 +291,26 @@ var transformer = function() {
       });
     });
   }
-  
+
   function data(node, cc) {
     var str = ""+visit(node.elts[0]);
     get("/pieces/L106?q=" + str, null, function (data) {
       var list = [];
       for (var i = 0; i < data.length; i++) {
-        list[i] = data[i].id        
+        list[i] = data[i].id
       }
       cc(list);
-/*
-      // Okay, we have a list of matching item ids. Now get the actual items.
-      get("/code", {list: String(list)}, function (data) {
-        cc(data);
-      });
-*/
+    });
+  }
+
+  function lang(node, cc) {
+    var str = ""+visit(node.elts[0]);
+    get("/pieces/L106?q=" + str, null, function (data) {
+      var list = [];
+      for (var i = 0; i < data.length; i++) {
+        list[i] = data[i].id
+      }
+      cc(list);
     });
   }
 
@@ -370,7 +394,7 @@ var renderer = function() {
   function print(str) {
     console.log(str)
   }
-  
+
   var nodePool
 
   function render(node, cc) {
