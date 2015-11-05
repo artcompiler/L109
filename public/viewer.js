@@ -147,6 +147,10 @@ window.exports.viewer = (function () {
     var start = str.indexOf(rootName);
     str = str.substring(start);
     var name = getAlphaNumericPrefix(str);
+    if (name !== rootName) {
+      // Don't have an exact match, so skip this one.
+      return null;
+    }
     var node = getNodeFromPool(name, pool, parent);
     str = str.substring(name.length);
     while (str.charAt(0) === ".") {
@@ -178,6 +182,9 @@ window.exports.viewer = (function () {
         var value = srcObj.arg2 ? srcObj.arg1 : null;
         var response = srcObj.arg2 ? srcObj.arg2 : srcObj.arg1;
         var node = parseItemName(source, src, names, children);
+        if (node === null) {
+          return;
+        }
         try {
           var objectCode = val.obj;
           if (!objectCode) {
