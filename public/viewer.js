@@ -143,16 +143,27 @@ window.exports.viewer = (function () {
   function parseItemName(src, str, pool, parent) {
     // #CCSS.Math.Content.8.EE.C.7
     // A pool is an hash table, aka object.
-    rootName = getRootName(src);  // data "root" -> root
+    var rootName = getRootName(src);  // data "root" -> root
     var start = str.indexOf(rootName);
+    var rootParts = rootName.split(".");
     str = str.substring(start);
-    var name = getAlphaNumericPrefix(str);
-    if (name !== rootName) {
-      // Don't have an exact match, so skip this one.
+    var good = rootParts.every(function (p) {
+      if (str.charAt(0) === ".") {
+        str = str.substring(1);
+      }
+      var name = getAlphaNumericPrefix(str);
+      if (name !== p) {
+        // Don't have an exact match, so skip this one.
+        return false;
+      }
+      str = str.substring(name.length);
+      return true;
+    });
+    if (!good) {
       return null;
     }
+    var name = rootName;
     var node = getNodeFromPool(name, pool, parent);
-    str = str.substring(name.length);
     while (str.charAt(0) === ".") {
       str = str.substring(1);
       var part = getAlphaNumericPrefix(str);
