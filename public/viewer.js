@@ -147,7 +147,10 @@ window.exports.viewer = (function () {
     var start = str.indexOf(rootName);
     var rootParts = rootName.split(".");
     str = str.substring(start);
-    var good = rootParts.length < 2 || rootParts.every(function (p) {
+    str = str.substring(rootName.length);
+    var good =
+      rootParts.length < 2 && str.charAt(0) !== "." ||
+      rootParts.every(function (p) {
       if (str.charAt(0) === ".") {
         str = str.substring(1);
       }
