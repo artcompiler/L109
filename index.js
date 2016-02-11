@@ -24,13 +24,13 @@ app.get('/compile', function(req, res) {
   });
   req.on('end', function () {
     var src = JSON.parse(data).src;
-    var obj = compiler.compile(src, function (err, val) {
+    compiler.compile(src, function (err, obj) {
       if (err) {
         res.send({
           error: err
         });
       } else {
-        res.send(val);
+        res.send(obj);
       }
     });
   });

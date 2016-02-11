@@ -49,7 +49,7 @@ exports.globalLexicon = {
     "print" : { "tk": 0x01, "cls": "function", "length": 1 },
 
     "data" : { "tk": 0x01, "name": "DATA", "cls": "function", "length": 1 },
-    "lang" : { "tk": 0x01, "name": "LANG", "cls": "function", "length": 1 },
+    "label" : { "tk": 0x01, "name": "LABEL", "cls": "function", "length": 2 },
 
     "plus" : { "tk": 0x01, "name": "PLUS", "cls": "function", "length": 2 },
     "minus" : { "tk": 0x01, "name": "MINUS", "cls": "function", "length": 2 },

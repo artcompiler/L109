@@ -46,7 +46,7 @@ var transformer = function() {
     "IDENT": ident,
 
     "DATA" : data,
-    "LANG" : lang,
+    "LABEL" : label,
 
     "MATH-RAND" : random,
     "RAND" : random,
@@ -152,33 +152,45 @@ var transformer = function() {
 
   var edgesNode;
 
-  function program(node, cc) {
-    var elts = [ ]
-    elts.push(visit(node.elts[0], cc))
-    return {
-      "tag": "",
-      //            "class": "program",
-      "elts": elts
-    }
-  }
-
-  function exprs(node, cc) {
-    var elts = []
-    if (node.elts) {
-      for (var i = 0; i < node.elts.length; i++) {
-        elts.push(visit(node.elts[i], cc))
+  function program(node, resume) {
+    var val = [];
+    val.push(visit(node.elts[0], function (err, val0) {
+      if (val0.length > 0) {
+        val0 = val0[0];
       }
-    }
-    if (elts.length===1) {
-      return elts[0]
-    }
-    return {
-      tag: "",
-      //            class: "exprs",
-      elts: elts
-    }
+      var keys = Object.keys(val0);
+      var q = "";
+      keys.forEach(function (key) {
+        if (q) {
+          q += "&";
+        }
+        q += key + "=" + val0[key];
+      });
+      get("/pieces/L106?" + q, null, function (data) {
+        var list = [];
+        for (var i = 0; i < data.length; i++) {
+          list[i] = data[i].id
+        }
+        resume(null, list);
+      });
+    }));
   }
-
+  function exprs(node, resume) {
+    if (node.elts && node.elts.length > 1) {
+      visit(node.elts[0], function (err1, val1) {
+        node.elts.shift();
+        exprs(node, function (err2, val2) {
+          resume([].concat(err1).concat(err2), [].concat(val1).concat(val2));
+        });
+      });
+    } else if (node.elts && node.elts.length > 0) {
+      visit(node.elts[0], function (err1, val1) {
+        resume([].concat(err1), [].concat(val1));
+      });
+    } else {
+      resume([], []);
+    }
+  };
   function list(node, cc) {
     var elts = []
     if (node.elts) {
@@ -292,25 +304,20 @@ var transformer = function() {
     });
   }
 
-  function data(node, cc) {
-    var str = ""+visit(node.elts[0]);
-    get("/pieces/L106?q=" + str, null, function (data) {
-      var list = [];
-      for (var i = 0; i < data.length; i++) {
-        list[i] = data[i].id
-      }
-      cc(list);
+  function data(node, resume) {
+    visit(node.elts[0], function (err, val) {
+      resume(null, {
+        src: val
+      });
     });
   }
 
-  function lang(node, cc) {
-    var str = ""+visit(node.elts[0]);
-    get("/pieces/L106?q=" + str, null, function (data) {
-      var list = [];
-      for (var i = 0; i < data.length; i++) {
-        list[i] = data[i].id
-      }
-      cc(list);
+  function label(node, resume) {
+    visit(node.elts[0], function (err, val0) {
+      visit(node.elts[1], function (err, val1) {
+        val0.label = val1;
+        resume(null, val0);
+      });
     });
   }
 
@@ -344,8 +351,8 @@ var transformer = function() {
     return node.elts[0];
   }
 
-  function str(node) {
-    return node.elts[0];
+  function str(node, resume) {
+    resume(null, node.elts[0]);
   }
 
   function parens(node) {
@@ -400,7 +407,7 @@ var renderer = function() {
   function render(node, cc) {
     //var str = ""
     //str += visit(node, "  ")
-    cc(node);
+    cc(null, node);
   }
 
   function visit(node, cc) {
@@ -422,10 +429,10 @@ var renderer = function() {
 
 exports.compiler = function () {
   exports.compile = compile;
-  function compile(src, next) {
-    transformer.transform(src, function (data) {
-      renderer.render(data, function (data) {
-        next(null, data);
+  function compile(ast, resume) {
+    transformer.transform(ast, function (err, val) {
+      renderer.render(val, function (err, obj) {
+        resume(err, obj);
       });
     });
   }
