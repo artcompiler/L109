@@ -1,5 +1,3 @@
-/* -*- Mode: js; js-indent-level: 2; indent-tabs-mode: nil; tab-width: 2 -*- */
-/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 /* copyright (c) 2014, Jeff Dyer */
 window.exports.viewer = (function () {
   var height;
@@ -716,8 +714,8 @@ window.exports.viewer = (function () {
         })
 
 
-    d3.select(window)
-      .on("click", function() { click(root); })
+//    d3.select(window)
+//      .on("click", function() { click(root); })
 
 
     function click(d) {
