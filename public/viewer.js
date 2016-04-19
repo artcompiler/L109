@@ -208,6 +208,10 @@ window.exports.viewer = (function () {
           var responseSVG = objObj.responseSVG;
           var score = objObj.score;
           var n;
+          if (method === "calculate ") {
+            value = response;
+            response = objObj.result;
+          }
           if (!(n = names[response])) {
             // Add a node to the pool.
             names[response] = n = {
@@ -340,7 +344,7 @@ window.exports.viewer = (function () {
           while ((c = str[i++]) !== "\"" && c) {
             arg1 += c;
           }
-          if (method.indexOf("is") >= 0 &&
+          if ((method.indexOf("is") >= 0 || method.indexOf("calculate") >= 0) &&
               method.indexOf("isUnit") < 0) {
             // One argument function
             state = END;
