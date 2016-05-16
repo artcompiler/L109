@@ -13,12 +13,14 @@ window.exports.viewer = (function () {
       || document.documentElement.clientWidth
       || document.body.clientWidth;
     
-    var height = window.innerHeight
-      || document.documentElement.clientHeight
-      || document.body.clientHeight;
+    var height =
+      window.exports.height ||
+      window.innerHeight ||
+      document.documentElement.clientHeight ||
+      document.body.clientHeight;
     return {
       width: width - 20,
-      height: height - 100,
+      height: height,
     };
   }
 
@@ -177,13 +179,15 @@ window.exports.viewer = (function () {
 
   function update(el, obj, source, pool) {
     obj = JSON.parse(obj);
-    loadItems(obj, [], function (obj) {
+    var height = window.exports.height = +obj.height;
+    var items = obj.items;
+    loadItems(obj.items, [], function (items) {
       var c, i = 0;
       var data = [];
       var children = [];
       var names = {};
-      Object.keys(obj).forEach(function (name) {
-        var val = obj[name];
+      Object.keys(items).forEach(function (name) {
+        var val = items[name];
         if (val.language !== "L106") {
           return;
         }
@@ -252,10 +256,12 @@ window.exports.viewer = (function () {
         }
       });
       if (children.length === 1) {
+        children[0].height = +height;
         render(el, children[0]);
       } else {
         render(el, {
-          name: "[" + obj.length + "] " + source,
+          name: "[" + items.length + "] " + source,
+          height: height,
           parent: null,
           children: children,
           svg: RECT,
@@ -488,7 +494,7 @@ window.exports.viewer = (function () {
     d3.selectAll("g").remove();
     var size = getWindowSize(),
         w = size.width,
-        h = size.height; //countLeaves(root) * 20,
+        h = root.height ? root.height : size.height,
         x = d3.scale.linear().range([0, w]),
         y = d3.scale.linear().range([0, h]);
 

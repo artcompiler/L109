@@ -47,6 +47,7 @@ var transformer = function() {
 
     "DATA" : data,
     "LABEL" : label,
+    "HEIGHT" : height,
 
     "MATH-RAND" : random,
     "RAND" : random,
@@ -171,7 +172,10 @@ var transformer = function() {
         for (var i = 0; i < data.length; i++) {
           list[i] = data[i].id
         }
-        resume(null, list);
+        resume(null, {
+          items: list,
+          height: val0.height
+        });
       });
     }));
   }
@@ -321,6 +325,15 @@ var transformer = function() {
     });
   }
 
+  function height(node, resume) {
+    visit(node.elts[0], function (err, val0) {
+      visit(node.elts[1], function (err, val1) {
+        val0.height = val1;
+        resume(null, val0);
+      });
+    });
+  }
+
   function polarToCartesian(centerX, centerY, radiusX, radiusY, angleInDegrees) {
     var angleInRadians = angleInDegrees * Math.PI / 180.0;
     var x = centerX + radiusX * Math.cos(angleInRadians);
@@ -343,12 +356,12 @@ var transformer = function() {
     return str+"-"+ticket
   }
 
-  function bool(node) {
-    return node.elts[0];
+  function bool(node, resume) {
+    resume(null, node.elts[0]);
   }
 
-  function num(node) {
-    return node.elts[0];
+  function num(node, resume) {
+    resume(null, node.elts[0]);
   }
 
   function str(node, resume) {

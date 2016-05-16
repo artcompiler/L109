@@ -40,6 +40,7 @@ exports.globalLexicon = {
 
     "data" : { "tk": 1, "name": "DATA", "cls": "function", "length": 1 },
     "label" : { "tk": 1, "name": "LABEL", "cls": "function", "length": 2 },
+    "height" : { "tk": 1, "name": "HEIGHT", "cls": "function", "length": 2 },
 
     "plus" : { "tk": 1, "name": "PLUS", "cls": "function", "length": 2 },
     "minus" : { "tk": 1, "name": "MINUS", "cls": "function", "length": 2 },
