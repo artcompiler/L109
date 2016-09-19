@@ -350,7 +350,7 @@ window.exports.viewer = (function () {
           while ((c = str[i++]) !== "\"" && c) {
             arg1 += c;
           }
-          if ((method.indexOf("is") >= 0 || method.indexOf("calculate") >= 0) &&
+          if ((method.indexOf("is") >= 0 || method.indexOf("calculate") === 0) &&
               method.indexOf("isUnit") < 0) {
             // One argument function
             state = END;
