@@ -4,7 +4,6 @@
    Web service for compiling L109.
 */
 
-var http = require('http');
 var express = require('express')
 var app = express();
 
