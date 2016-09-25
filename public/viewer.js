@@ -4,7 +4,7 @@ window.exports.viewer = (function () {
   var contextMenuShowing = false;
   function clickThumbnail(e, id) {
     showWorkspace();
-    $.get("http://"+location.host+"/code/"+id, function (data) {
+    $.get("https://"+location.host+"/code/"+id, function (data) {
       updateSrc(data[0].id, data[0].src);
     });
   }
@@ -61,7 +61,7 @@ window.exports.viewer = (function () {
   }
 
   var SIZE = 100;
-  var RECT = "<svg xmlns='http://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
+  var RECT = "<svg xmlns='https://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
   var ITEM_COUNT = 20;
 
   function loadItems(list, data, resume) {
