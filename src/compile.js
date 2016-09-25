@@ -19,7 +19,7 @@ function getGCPort() {
   if (port === 5109) {
     return "3000";
   } else {
-    return "80";
+    return "443";
   }
 }
 
