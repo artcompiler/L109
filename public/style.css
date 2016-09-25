@@ -155,7 +155,6 @@ img, image {
   position: relative;
   top: 0;
 }
-
 li.color {
   width: 30px;
   height: 20px;
@@ -169,7 +168,6 @@ li.color:hover {
 li.color-2 {
   background-color: green;
 }
-
 #graff-view {
   font-size: 11px;
 }

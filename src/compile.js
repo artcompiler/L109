@@ -3,7 +3,7 @@
 /* Copyright (c) 2014, Art Compiler LLC */
 
 var _ = require("underscore");
-var http = require('http');
+var https = require('https');
 var querystring = require("querystring");
 
 function getGCHost() {
@@ -292,7 +292,7 @@ var transformer = function() {
       port: getGCPort(),
       path: path,
     };
-    var req = http.get(options, function(res) {
+    var req = https.get(options, function(res) {
       var data = "";
       res.on('data', function (chunk) {
         data += chunk;
