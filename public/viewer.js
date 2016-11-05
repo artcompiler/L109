@@ -1,5 +1,5 @@
 /* copyright (c) 2014, Jeff Dyer */
-window.exports.viewer = (function () {
+window.gcexports.viewer = (function () {
   var height;
   var contextMenuShowing = false;
   function clickThumbnail(e, id) {
@@ -14,7 +14,7 @@ window.exports.viewer = (function () {
       || document.body.clientWidth;
     
     var height =
-      window.exports.height ||
+      window.gexports.height ||
       window.innerHeight ||
       document.documentElement.clientHeight ||
       document.body.clientHeight;
@@ -179,7 +179,7 @@ window.exports.viewer = (function () {
 
   function update(el, obj, source, pool) {
     obj = JSON.parse(obj);
-    var height = window.exports.height = +obj.height;
+    var height = window.gcexports.height = +obj.height;
     var items = obj.items;
     loadItems(obj.items, [], function (items) {
       var c, i = 0;
