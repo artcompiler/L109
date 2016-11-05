@@ -14,7 +14,7 @@ window.gcexports.viewer = (function () {
       || document.body.clientWidth;
     
     var height =
-      window.gexports.height ||
+      window.gcexports.height ||
       window.innerHeight ||
       document.documentElement.clientHeight ||
       document.body.clientHeight;
