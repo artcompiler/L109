@@ -119,10 +119,8 @@ window.gcexports.viewer = (function () {
 
   function getRootName(str) {
     // data "CCSS.Math.Content.8"
-    var start = str.indexOf("data");
-    str = str.substring(start + "data".length);
-    obj = str.split("\"");
-    return obj[1];
+    obj = str.split(",");
+    return obj[0];
   }
 
   function getNodeFromPool(name, pool, parent) {
@@ -144,7 +142,7 @@ window.gcexports.viewer = (function () {
   function parseItemName(src, str, pool, parent) {
     // #CCSS.Math.Content.8.EE.C.7
     // A pool is an hash table, aka object.
-    var rootName = getRootName(src);  // data "root" -> root
+    var rootName = getRootName(src);
     var start = str.indexOf(rootName);
     var rootParts = rootName.split(".");
     str = str.substring(start);
@@ -178,9 +176,12 @@ window.gcexports.viewer = (function () {
   }
 
   function update(el, obj, source, pool) {
-    obj = JSON.parse(obj);
+    if (typeof obj === "string") {
+      obj = JSON.parse(obj);
+    }
     var height = window.gcexports.height = +obj.height;
     var items = obj.items;
+    source = obj.src ? obj.src : source;
     loadItems(obj.items, [], function (items) {
       var c, i = 0;
       var data = [];

@@ -155,6 +155,7 @@ var transformer = function() {
           list[i] = data[i].id
         }
         resume(null, {
+          src: val0.src,
           items: list,
           height: val0.height
         });
