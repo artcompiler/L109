@@ -62,13 +62,13 @@ window.gcexports.viewer = (function () {
 
   var SIZE = 100;
   var RECT = "<svg xmlns='https://www.w3.org/2000/svg'><g><rect width='0px' height='0px'/></g></svg>";
-  var ITEM_COUNT = 20;
+  var ITEM_COUNT = 200;
 
   function loadItems(list, data, resume) {
     var sublist = list.slice(0, ITEM_COUNT);
     $.ajax({
       type: "GET",
-      url: "/code",
+      url: "/items",
       data : {list: sublist},
       dataType: "json",
       success: function(dd) {
