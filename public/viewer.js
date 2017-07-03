@@ -254,6 +254,7 @@ window.gcexports.viewer = (function () {
           }
           breadth++;
         } catch (e) {
+          e = e;
         }
       });
       if (children.length === 1) {
@@ -492,7 +493,7 @@ window.gcexports.viewer = (function () {
   var MIN_HEIGHT = 20;
 
   function render(el, root) {
-    d3.selectAll("g").remove();
+    d3.select(el).selectAll("g").remove();
     var size = getWindowSize(),
         w = size.width,
         h = root.height ? root.height : size.height,

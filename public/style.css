@@ -35,7 +35,7 @@ body {
 }
 
 rect {
-  fill: none;
+//  fill: none;
   pointer-events: all;
 }
 
@@ -95,7 +95,7 @@ a:hover {
 rect {
   stroke-width: 1.5px;
   stroke: rgba(16, 16, 16, 0.1);
-  fill: #eee;
+//  fill: #eee;
   fill-opacity: .8;
 }
 
