@@ -669,7 +669,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + d.item + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -696,7 +696,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + d.item + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -719,7 +719,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + d.item + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -744,7 +744,7 @@ window.gcexports.viewer = (function () {
       }
 
       if (!d.children && d.item) {
-        window.open("/item?id=" + d.item, "L106");
+        window.open("/item?id=" + window.gcexports.encodeID([106, +d.item, 0]), "L106");
         return;
       }
 
