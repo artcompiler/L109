@@ -330,7 +330,7 @@ var renderer = function() {
 
 exports.compiler = function () {
   exports.compile = compile;
-  function compile(ast, resume) {
+  function compile(ast, data, resume) {
     transformer.transform(ast, function (err, val) {
       renderer.render(val, function (err, obj) {
         resume(err, obj);
