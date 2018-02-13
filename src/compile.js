@@ -3,21 +3,22 @@
 /* Copyright (c) 2014, Art Compiler LLC */
 
 var _ = require("underscore");
+var http = require('http');
 var https = require('https');
 var querystring = require("querystring");
 const LOCAL = false;
 
 function getGCHost() {
-  var port = global.port;
-  if (LOCAL && port === 5109) {
+  const LOCAL = global.port === 5109;
+  if (LOCAL) {
     return "localhost";
   } else {
     return "www.graffiticode.com";
   }
 }
 function getGCPort() {
-  var port = global.port;
-  if (LOCAL && port === 5109) {
+  const LOCAL = global.port === 5109;
+  if (LOCAL) {
     return "3000";
   } else {
     return "443";
@@ -199,7 +200,7 @@ var transformer = function() {
       port: getGCPort(),
       path: path,
     };
-    var req = https.get(options, function(res) {
+    var req = http.get(options, function(res) {
       var data = "";
       res.on('data', function (chunk) {
         data += chunk;

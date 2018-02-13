@@ -504,10 +504,18 @@ window.gcexports.viewer = (function () {
       .attr("width", w)
       .attr("height", h)
 
-    var partition = d3.layout.partition()
-        .value(function(d) {
-          return d.size;
-        });
+    var partition = d3.layout.partition().sort((a, b) => {
+          let ai = a.name.slice(a.name.lastIndexOf(".") + 1);
+          let bi = b.name.slice(b.name.lastIndexOf(".") + 1);
+          if (isNaN(+ai) || isNaN(+bi)) {
+            return ai < bi ? -1 : 1;
+          } else {
+            return +ai < +bi ? -1 : 1;
+          }
+      })
+      .value(function(d) {
+        return d.size;
+      });
 
     var g = d3.select(el).selectAll("g")
       .data(partition.nodes(root))

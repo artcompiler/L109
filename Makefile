@@ -9,7 +9,7 @@ wdefault: lib run
 lib: $(LIB)
 lib/%.js: src/%.js
 	mkdir -p $(@D)
-	compile-modules convert $(SRC) > $(LIB)
+	babel --modules common $< -o $@
 
 run:
 	node index
