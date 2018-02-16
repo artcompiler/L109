@@ -722,7 +722,7 @@ window.gcexports.viewer = (function () {
         if (getWidth(d.svg)) {
           return "";
         }
-        if (labels[d.name]) {
+        if (labels && labels[d.name]) {
           return labels[d.name];
         } else {
           return d.name;
