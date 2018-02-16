@@ -41,6 +41,8 @@ var transformer = function() {
     "PROG" : program,
     "EXPRS" : exprs,
     "LIST" : list,
+    "RECORD": record,
+    "BINDING": binding,
     "BOOL" : bool,
     "NUM" : num,
     "STR" : str,
@@ -49,6 +51,7 @@ var transformer = function() {
 
     "DATA" : data,
     "LABEL" : label,
+    "LABELS" : labels,
     "HEIGHT" : height,
   }
 
@@ -158,10 +161,40 @@ var transformer = function() {
         resume(null, {
           src: val0.src,
           items: list,
-          height: val0.height
+          height: val0.height,
+          labels: val0.labels,
         });
       });
     }));
+  }
+  function binding(node, resume) {
+    visit(node.elts[0], function (err1, val1) {
+      visit(node.elts[1], function (err2, val2) {
+        resume([].concat(err1).concat(err2), {key: val1, val: val2});
+      });
+    });
+  }
+  function record(node, resume) {
+    if (node.elts && node.elts.length > 1) {
+      visit(node.elts[0], function (err1, val1) {
+        node = {
+          tag: "RECORD",
+          elts: node.elts.slice(1),
+        };
+        record(node, function (err2, val2) {
+          val2[val1.key] = val1.val;
+          resume([].concat(err1).concat(err2), val2);
+        });
+      });
+    } else if (node.elts && node.elts.length > 0) {
+      visit(node.elts[0], function (err1, val1) {
+        let val = {};
+        val[val1.key] = val1.val;
+        resume([].concat(err1), val);
+      });
+    } else {
+      resume([], {});
+    }
   }
   function exprs(node, resume) {
     if (node.elts && node.elts.length > 1) {
@@ -229,6 +262,15 @@ var transformer = function() {
     visit(node.elts[0], function (err, val0) {
       visit(node.elts[1], function (err, val1) {
         val1.label = val0;
+        resume(null, val1);
+      });
+    });
+  }
+
+  function labels(node, resume) {
+    visit(node.elts[0], function (err, val0) {
+      visit(node.elts[1], function (err, val1) {
+        val1.labels = val0;
         resume(null, val1);
       });
     });

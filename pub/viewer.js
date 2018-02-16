@@ -259,7 +259,7 @@ window.gcexports.viewer = (function () {
       });
       if (children.length === 1) {
         children[0].height = +height;
-        render(el, children[0]);
+        render(el, children[0], obj.labels);
       } else {
         render(el, {
           name: "[" + items.length + "] " + source,
@@ -267,7 +267,7 @@ window.gcexports.viewer = (function () {
           parent: null,
           children: children,
           svg: RECT,
-        });
+        }, obj.labels);
       }
     });
   }
@@ -492,7 +492,7 @@ window.gcexports.viewer = (function () {
 
   var MIN_HEIGHT = 20;
 
-  function render(el, root) {
+  function render(el, root, labels) {
     d3.select(el).selectAll("g").remove();
     var size = getWindowSize(),
         w = size.width,
@@ -721,6 +721,11 @@ window.gcexports.viewer = (function () {
       .text(function(d) {
         if (getWidth(d.svg)) {
           return "";
+        }
+        if (labels[d.name]) {
+          return labels[d.name];
+        } else {
+          return d.name;
         }
         return d.name;
       })

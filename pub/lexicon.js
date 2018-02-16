@@ -40,6 +40,7 @@ window.gcexports.globalLexicon = {
 
     "data" : { "tk": 1, "name": "DATA", "cls": "function", "length": 1 },
     "label" : { "tk": 1, "name": "LABEL", "cls": "function", "length": 2 },
+    "labels" : { "tk": 1, "name": "LABELS", "cls": "function", "length": 2 },
     "height" : { "tk": 1, "name": "HEIGHT", "cls": "function", "length": 2 },
 
     "plus" : { "tk": 1, "name": "PLUS", "cls": "function", "length": 2 },
