@@ -677,7 +677,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/form?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -704,7 +704,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/form?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -732,7 +732,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/form?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -757,7 +757,7 @@ window.gcexports.viewer = (function () {
       }
 
       if (!d.children && d.item) {
-        window.open("/item?id=" + window.gcexports.encodeID([106, +d.item, 0]), "L106");
+        window.open("/form?id=" + window.gcexports.encodeID([106, +d.item, 0]), "L106");
         return;
       }
 
