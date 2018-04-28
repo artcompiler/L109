@@ -2,6 +2,7 @@
 window.gcexports.viewer = (function () {
   var height;
   var contextMenuShowing = false;
+  var view = window.gcexports.view;
   function clickThumbnail(e, id) {
     showWorkspace();
     $.get("https://"+location.host+"/code/"+id, function (data) {
@@ -677,7 +678,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/form?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -704,7 +705,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/form?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -732,7 +733,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/form?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -757,7 +758,7 @@ window.gcexports.viewer = (function () {
       }
 
       if (!d.children && d.item) {
-        window.open("/form?id=" + window.gcexports.encodeID([106, +d.item, 0]), "L106");
+        window.open("/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]), "L106");
         return;
       }
 
