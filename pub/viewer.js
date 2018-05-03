@@ -678,7 +678,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -705,7 +705,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -733,7 +733,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
