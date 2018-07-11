@@ -506,8 +506,8 @@ window.gcexports.viewer = (function () {
       .attr("height", h)
 
     var partition = d3.layout.partition().sort((a, b) => {
-          let ai = a.name.slice(a.name.lastIndexOf(".") + 1);
-          let bi = b.name.slice(b.name.lastIndexOf(".") + 1);
+          let ai = a.name && a.name.slice(a.name.lastIndexOf(".") + 1) || 0;
+          let bi = b.name && b.name.slice(b.name.lastIndexOf(".") + 1) || 0;
           if (isNaN(+ai) || isNaN(+bi)) {
             return ai < bi ? -1 : 1;
           } else {
