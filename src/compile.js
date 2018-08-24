@@ -153,9 +153,10 @@ var transformer = function() {
         }
         where += "%" + s;
       });
-      where += "%'";
+      let label = val0.label || "show";
+      where = where && where + "%' AND label='" + label + "'" || "label='" + label + "'";
       let query = {
-        where: where ? where : "label='show'",
+        where: where,
         fields: ["id"],
         limit: val0.limit ? val0.limit : "1000",
       };
@@ -279,7 +280,7 @@ var transformer = function() {
   function labels(node, resume) {
     visit(node.elts[0], function (err, val0) {
       visit(node.elts[1], function (err, val1) {
-        val1.labels = val0;
+        val1.label = val0;
         resume(null, val1);
       });
     });
