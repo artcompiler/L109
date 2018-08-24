@@ -145,26 +145,38 @@ var transformer = function() {
       if (val0.length > 0) {
         val0 = val0[0];
       }
-      var keys = Object.keys(val0);
-      var q = "";
-      keys.forEach(function (key) {
-        if (q) {
-          q += "&";
+      let where = "";
+      let src = val0.src || "";
+      src.split(",").forEach(s => {
+        if (where === "") {
+          where += " src like '";
         }
-        q += key + "=" + val0[key];
+        where += "%" + s;
       });
-      get("/pieces/L106?" + q, null, function (data) {
-        var list = [];
-        for (var i = 0; i < data.length; i++) {
-          list[i] = data[i].id
-        }
+      where += "%'";
+      let query = {
+        where: where ? where : "label='show'",
+        fields: ["id"],
+        limit: val0.limit ? val0.limit : "1000",
+      };
+      get(query, (rows) => {
+        console.log("Found " + rows.length + " items");
+        let items = [];
+        rows.forEach(row => {
+          try {
+            items.push(row.id);
+          } catch (x) {
+            console.log("JSON parse error parsing: " + JSON.stringify(r.obj));
+          }
+        });
         resume(null, {
           src: val0.src,
-          items: list,
+          items: items,
           height: val0.height,
           labels: val0.labels,
         });
       });
+
     }));
   }
   function binding(node, resume) {
@@ -222,19 +234,16 @@ var transformer = function() {
     return "[" + elts[0].elts + "]";
   }
 
-  function get(path, data, cc) {
-    if (data) {
-      path += "?" + querystring.stringify(data);
-    }
-    path = path.trim().replace(/ /g, "+");
+  function get(data, cc) {
     var options = {
       method: "GET",
       host: getGCHost(),
       port: getGCPort(),
-      path: path,
+      path: "/items?" + querystring.stringify(data).trim().replace(/ /g, "+")
     };
-    var proto = global.port === 5109 ? http : https;
-    var req = proto.get(options, function(res) {
+    const LOCAL = global.port === 5109;
+    const protocol = LOCAL ? http : https;
+    var req = protocol.get(options, function(res) {
       var data = "";
       res.on('data', function (chunk) {
         data += chunk;
