@@ -190,7 +190,7 @@ window.gcexports.viewer = (function () {
       var names = {};
       Object.keys(items).forEach(function (name) {
         var val = items[name];
-        if (val.language !== "L106") {
+        if (val.language !== "L106" && val.language !== "L108") {
           return;
         }
         var item = val.id;
@@ -678,7 +678,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([108, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -705,7 +705,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([108, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -733,7 +733,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([106, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([108, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -758,7 +758,7 @@ window.gcexports.viewer = (function () {
       }
 
       if (!d.children && d.item) {
-        window.open("/" + view + "?id=" + window.gcexports.encodeID([106, +d.item, 0]), "L106");
+        window.open("/" + view + "?id=" + window.gcexports.encodeID([108, +d.item, 0]), "L106");
         return;
       }
 
