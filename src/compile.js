@@ -155,7 +155,7 @@ var transformer = function() {
       });
       let label = val0.label || "show";
       where = where && where + "%' AND label='" + label + "'" || "label='" + label + "'";
-      where = where + " AND (language='L106' OR language='L108')";
+//      where = where + " AND (language='L106' OR language='L108')";
 
       let query = {
         where: where,
