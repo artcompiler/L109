@@ -282,7 +282,7 @@ var transformer = function() {
   function labels(node, resume) {
     visit(node.elts[0], function (err, val0) {
       visit(node.elts[1], function (err, val1) {
-        val1.label = val0;
+        val1.labels = val0;
         resume(null, val1);
       });
     });
