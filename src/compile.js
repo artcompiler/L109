@@ -160,7 +160,7 @@ var transformer = function() {
       let query = {
         where: where,
         fields: ["id"],
-        limit: val0.limit ? val0.limit : "1000",
+        limit: val0.limit ? val0.limit : "10000",
       };
       get(query, (rows) => {
         console.log("Found " + rows.length + " items");
