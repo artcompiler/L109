@@ -42,6 +42,7 @@ window.gcexports.globalLexicon = {
     "label" : { "tk": 1, "name": "LABEL", "cls": "function", "length": 2 },
     "labels" : { "tk": 1, "name": "LABELS", "cls": "function", "length": 2 },
     "height" : { "tk": 1, "name": "HEIGHT", "cls": "function", "length": 2 },
+    "use" : { "tk": 1, "name": "USE", "cls": "function", "length": 2 },
 
     "plus" : { "tk": 1, "name": "PLUS", "cls": "function", "length": 2 },
     "minus" : { "tk": 1, "name": "MINUS", "cls": "function", "length": 2 },

@@ -53,6 +53,7 @@ var transformer = function() {
     "LABEL" : label,
     "LABELS" : labels,
     "HEIGHT" : height,
+    "USE" : use,
   }
 
   var RADIUS = 100;
@@ -177,6 +178,7 @@ var transformer = function() {
           items: items,
           height: val0.height,
           labels: val0.labels,
+          use: val0.use,
         });
       });
 
@@ -292,6 +294,15 @@ var transformer = function() {
     visit(node.elts[0], function (err, val0) {
       visit(node.elts[1], function (err, val1) {
         val1.height = val0;
+        resume(null, val1);
+      });
+    });
+  }
+
+  function use(node, resume) {
+    visit(node.elts[0], function (err, val0) {
+      visit(node.elts[1], function (err, val1) {
+        val1.use = val0;
         resume(null, val1);
       });
     });

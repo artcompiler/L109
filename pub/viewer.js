@@ -176,12 +176,14 @@ window.gcexports.viewer = (function () {
     return node;
   }
 
+  var langID = 108;
   function update(el, obj, source, pool) {
     if (typeof obj === "string") {
       obj = JSON.parse(obj);
     }
     var height = window.gcexports.height = +obj.height;
     var items = obj.items;
+    langID = obj.use && +obj.use || 108;
     source = obj.src ? obj.src : source;
     loadItems(obj.items, [], function (items) {
       var c, i = 0;
@@ -678,7 +680,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([108, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([langID, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -705,7 +707,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([108, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([langID, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -733,7 +735,7 @@ window.gcexports.viewer = (function () {
       .append("svg:title")
         .text(function(d) {
           if (!d.children) {
-            return "/item?id=" + window.gcexports.encodeID([108, +d.item, 0]) + "\n" + d.src;
+            return "/item?id=" + window.gcexports.encodeID([langID, +d.item, 0]) + "\n" + d.src;
           } else {
             return "";
           }
@@ -758,7 +760,7 @@ window.gcexports.viewer = (function () {
       }
 
       if (!d.children && d.item) {
-        window.open("/" + view + "?id=" + window.gcexports.encodeID([108, +d.item, 0]), "L106");
+        window.open("/" + view + "?id=" + window.gcexports.encodeID([langID, +d.item, 0]), "L106");
         return;
       }
 
