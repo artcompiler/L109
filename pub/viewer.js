@@ -652,9 +652,11 @@ window.gcexports.viewer = (function () {
         } else {
           switch (d.score) {
           case 1:
+          case true:
             c = "rgb(150, 255, 150)";
             break;
           case -1:
+          case false:
             c = "rgb(255, 150, 150)";
             break;
           default:
