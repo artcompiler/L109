@@ -635,6 +635,10 @@ window.gcexports.viewer = (function () {
 
     var menu = contextMenu().items('Hide');
     
+    const CLEAR = "#FEFEFE";
+    const YELLOW = "#E7B416";
+    const RED = "#CC3232";
+    const GREEN = "#2DC937";
     g.append("svg:rect")
       .on('contextmenu', function(data) { 
         d3.event.preventDefault();
@@ -645,23 +649,24 @@ window.gcexports.viewer = (function () {
       .attr("class", function(d) {
         return d.children ? "parent" : "child";
       })
-	    .style("fill", function(d) {
+      .style("fill-opacity", "0.4")
+      .style("fill", function(d) {
         var strokeColor;
         if (d.name ===  "root") {
-          c = "#DDD";
+          c = CLEAR; //"#DDD";
         } else {
           switch (d.score) {
           case 1:
           case true:
-            c = "rgb(150, 255, 150)";
+            c = GREEN; //"rgb(150, 255, 150)";
             break;
           case -1:
           case false:
-            c = "rgb(255, 150, 150)";
+            c = RED; //"rgb(255, 150, 150)";
             break;
           default:
             // Some red, some green
-            c = "#EEE";
+            c = CLEAR; //"#EEE";
             break;
           }
         }
