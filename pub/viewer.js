@@ -192,7 +192,7 @@ window.gcexports.viewer = (function () {
       var names = {};
       Object.keys(items).forEach(function (name) {
         var val = items[name];
-        if (val.language !== "L106" && val.language !== "L108") {
+        if (val.language !== "L106" && val.language !== "L108" && val.language !== "L110") {
           return;
         }
         var item = val.id;

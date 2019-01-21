@@ -156,8 +156,11 @@ var transformer = function() {
       });
       let label = val0.label || "show";
       where = where && where + "%' AND label='" + label + "'" || "label='" + label + "'";
-      where = where + " AND (language='L106' OR language='L108')";
-
+      if (val0.use === "110") {
+        where = where + " AND (language='L106' OR language='L108' OR language='L110')";
+      } else {
+        where = where + " AND (language='L106' OR language='L108')";
+      }
       let query = {
         where: where,
         fields: ["id"],
