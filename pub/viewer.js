@@ -262,6 +262,7 @@ window.gcexports.viewer = (function () {
       });
       if (children.length === 1) {
         children[0].height = +height;
+        children[0].name = "[" + items.length + "] " + children[0].name;
         render(el, children[0], obj.labels);
       } else {
         render(el, {
