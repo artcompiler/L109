@@ -710,7 +710,7 @@ window.gcexports.viewer = (function () {
         return d.dx * ky > d.height ? 1 : 0;
       })
       .attr("xlink:href", function (d) {
-        return "data:image/svg+xml;utf8," + d.svg;
+        return "data:image/svg+xml;utf8," + d.svg.replace(/#/g, "%23");
       })
       .append("svg:title")
         .text(function(d) {
