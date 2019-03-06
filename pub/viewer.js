@@ -456,7 +456,7 @@ window.gcexports.viewer = (function () {
     var begin = str.indexOf("width=") + 7;  // width="
     str = str.substring(begin);
     var end = str.indexOf("px");
-    if (end < 0) {
+    if (end < 0 || end > 5) {
       end = str.indexOf("ex");
       unit = EX;
     }
@@ -469,7 +469,7 @@ window.gcexports.viewer = (function () {
     var begin = str.indexOf("height") + 8;  // height="
     str = str.substring(begin);
     var end = str.indexOf("px");
-    if (end < 0) {
+    if (end < 0 || end > 5) {
       end = str.indexOf("ex");
       unit = EX;
     }
