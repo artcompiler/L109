@@ -266,8 +266,8 @@ window.gcexports.viewer = (function () {
         children[0].name = "[" + count + "] " + children[0].name;
         render(el, children[0], obj.labels);
       } else {
+        let count = countLeaves({children: children});
         render(el, {
-          let count = countLeaves({children: children});
           name: "[" + count + "] " + source,
           height: height,
           parent: null,
