@@ -25,13 +25,13 @@ window.gcexports.viewer = (function () {
     };
   }
 
-  function hideItem(id) {
+  function hideItem(id, hide) {
     $.ajax({
       type: "PUT",
       url: "/label",
       data: {
         id: id,
-        label: "hide",
+        label: hide && "hide" || "show",
       },
       dataType: "text",
       success: function(data) {
@@ -196,6 +196,7 @@ window.gcexports.viewer = (function () {
           return;
         }
         var item = val.id;
+        let label = val.label;
         var src = val.src;
         var srcObj = parseSrc(val.src);
         var method = srcObj.method;
@@ -229,6 +230,7 @@ window.gcexports.viewer = (function () {
               children: [],
               names: {},
               size: SIZE,
+              label: label,
             };
             node.children.push(n);
           }
@@ -242,6 +244,7 @@ window.gcexports.viewer = (function () {
               svg: unescapeXML(valueSVG ? valueSVG : RECT),
               src: src,
               item: item,
+              label: label,
             };
             n.children = n.children.concat(objToTree(o, response, n.names));
           } else {
@@ -253,6 +256,7 @@ window.gcexports.viewer = (function () {
               svg: RECT,
               src: src,
               item: item,
+              label: label,
             });
           }
           breadth++;
@@ -433,6 +437,7 @@ window.gcexports.viewer = (function () {
           svg: obj[name].svg,
           src: obj[name].src,
           item: obj[name].item,
+          label: obj[name].label,
         });
       }
       breadth++;
@@ -636,7 +641,8 @@ window.gcexports.viewer = (function () {
       return menu;
     }
 
-    var menu = contextMenu().items('Hide');
+    const hideMenu = contextMenu().items('Hide');
+    const showMenu = contextMenu().items('Show');
     
     const CLEAR = "#FEFEFE";
     const YELLOW = "#E7B416";
@@ -645,7 +651,11 @@ window.gcexports.viewer = (function () {
     g.append("svg:rect")
       .on('contextmenu', function(data) { 
         d3.event.preventDefault();
-        menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        if (data.label.indexOf("hide") >= 0) {
+          showMenu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        } else {
+          hideMenu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        }
       })
       .attr("width", root.dy * kx)
       .attr("height", function(d) { return d.dx * ky; })
@@ -699,7 +709,11 @@ window.gcexports.viewer = (function () {
     g.append("image")
       .on('contextmenu', function(data) { 
         d3.event.preventDefault();
-        menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        if (data.label.indexOf("hide") >= 0) {
+          showMenu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        } else {
+          hideMenu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        }
       })
       .attr("width", function (d) {
         return (d.width = getWidth(d.svg));
@@ -726,7 +740,11 @@ window.gcexports.viewer = (function () {
     g.append("svg:text")
       .on('contextmenu', function(data){ 
         d3.event.preventDefault();
-        menu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        if (data.label.indexOf("hide") >= 0) {
+          showMenu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        } else {
+          hideMenu(data, d3.mouse(this)[0], d3.mouse(this)[1]);
+        }
       })
       .attr("transform", transform)
       .attr("dy", ".35em")
@@ -763,7 +781,7 @@ window.gcexports.viewer = (function () {
         d3.event.stopPropagation();
         var item = d3.event.currentTarget.className.baseVal;
         item = item.substring("item".length);
-        hideItem(item);
+        hideItem(item, d.label.indexOf("hide") < 0 && true || false);
         d3.select('.context-menu').remove();
         contextMenuShowing = false;
         return;
