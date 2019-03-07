@@ -207,7 +207,7 @@ window.gcexports.viewer = (function () {
         }
         try {
           var objectCode = val.obj;
-          if (!objectCode) {
+          if (!objectCode || typeof objectCode !== "string") {
             return;
           }
           var objStr = escapeStr(unescapeXML(objectCode));
@@ -261,12 +261,14 @@ window.gcexports.viewer = (function () {
         }
       });
       if (children.length === 1) {
+        let count = countLeaves(children[0]);
         children[0].height = +height;
-        children[0].name = "[" + items.length + "] " + children[0].name;
+        children[0].name = "[" + count + "] " + children[0].name;
         render(el, children[0], obj.labels);
       } else {
         render(el, {
-          name: "[" + items.length + "] " + source,
+          let count = countLeaves({children: children});
+          name: "[" + count + "] " + source,
           height: height,
           parent: null,
           children: children,
