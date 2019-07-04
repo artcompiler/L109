@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --harmony index.js",
-    "build": "cp spokenmath/build/* src && cp mathcore/lib/mathcore.js src"
+    "build-dev": "cp spokenmath/build/* src && cp mathcore/lib/mathcore.js src"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
