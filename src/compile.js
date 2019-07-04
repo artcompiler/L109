@@ -167,6 +167,7 @@ var transformer = function() {
         limit: val0.limit ? val0.limit : "10000",
       };
       get(query, (rows) => {
+        console.log("Query " + JSON.stringify(query));
         console.log("Found " + rows.length + " items");
         let items = [];
         rows.forEach(row => {

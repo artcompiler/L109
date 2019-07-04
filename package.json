@@ -8,7 +8,9 @@
     "build": "cp spokenmath/build/* src && cp mathcore/lib/mathcore.js src"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "~3.4.x",
+    "json-diff": "^0.5.4",
     "mathjax-node": "0.5.2",
     "requirejs": "latest",
     "speech-rule-engine": "*",
