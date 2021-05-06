@@ -14,7 +14,7 @@
     "mathjax-node": "0.5.2",
     "requirejs": "latest",
     "speech-rule-engine": "*",
-    "underscore": "1.4.x",
+    "underscore": "1.12.x",
     "yargs": "*"
   },
   "engines": {
